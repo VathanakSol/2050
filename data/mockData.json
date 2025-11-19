@@ -1,0 +1,58 @@
+[
+    {
+        "id": "1",
+        "title": "Next.js Documentation",
+        "description": "The React Framework for the Web. Used by some of the world's largest companies, Next.js enables you to create full-stack Web applications by extending the latest React features.",
+        "url": "https://nextjs.org",
+        "category": "Framework"
+    },
+    {
+        "id": "2",
+        "title": "React",
+        "description": "A JavaScript library for building user interfaces. React makes it painless to create interactive UIs. Design simple views for each state in your application.",
+        "url": "https://react.dev",
+        "category": "Library"
+    },
+    {
+        "id": "3",
+        "title": "Tailwind CSS",
+        "description": "Rapidly build modern websites without ever leaving your HTML. A utility-first CSS framework packed with classes like flex, pt-4, text-center and rotate-90.",
+        "url": "https://tailwindcss.com",
+        "category": "CSS"
+    },
+    {
+        "id": "4",
+        "title": "TypeScript",
+        "description": "TypeScript extends JavaScript by adding types. By understanding JavaScript, TypeScript saves you time catching errors and providing fixes before you run code.",
+        "url": "https://www.typescriptlang.org",
+        "category": "Language"
+    },
+    {
+        "id": "5",
+        "title": "Vercel",
+        "description": "Vercel is the platform for frontend developers, providing the speed and reliability innovators need to create at the moment of inspiration.",
+        "url": "https://vercel.com",
+        "category": "Platform"
+    },
+    {
+        "id": "6",
+        "title": "MDN Web Docs",
+        "description": "The MDN Web Docs site provides information about Open Web technologies including HTML, CSS, and APIs for both Web sites and progressive web apps.",
+        "url": "https://developer.mozilla.org",
+        "category": "Documentation"
+    },
+    {
+        "id": "7",
+        "title": "Stack Overflow",
+        "description": "Stack Overflow is the largest, most trusted online community for developers to learn, share their knowledge, and build their careers.",
+        "url": "https://stackoverflow.com",
+        "category": "Community"
+    },
+    {
+        "id": "8",
+        "title": "GitHub",
+        "description": "GitHub is where over 100 million developers shape the future of software, together. Contribute to the open source community, manage your Git repositories.",
+        "url": "https://github.com",
+        "category": "Platform"
+    }
+]
