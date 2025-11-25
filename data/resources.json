@@ -1,0 +1,155 @@
+[
+    {
+        "title": "Codecademy",
+        "description": "Interactive coding lessons for various languages and frameworks.",
+        "url": "https://www.codecademy.com",
+        "category": "General",
+        "type": "Platform",
+        "pricing": "Freemium",
+        "level": "Beginner"
+    },
+    {
+        "title": "Coursera",
+        "description": "Online courses from top universities and companies.",
+        "url": "https://www.coursera.org",
+        "category": "General",
+        "type": "Platform",
+        "pricing": "Paid",
+        "level": "All Levels"
+    },
+    {
+        "title": "Udemy",
+        "description": "Marketplace for learning and teaching online.",
+        "url": "https://www.udemy.com",
+        "category": "General",
+        "type": "Platform",
+        "pricing": "Paid",
+        "level": "All Levels"
+    },
+    {
+        "title": "Codecademy",
+        "description": "Interactive coding lessons for various languages and frameworks.",
+        "url": "https://www.codecademy.com",
+        "category": "General",
+        "type": "Platform",
+        "pricing": "Freemium",
+        "level": "Beginner"
+    },
+    {
+        "title": "Coursera",
+        "description": "Online courses from top universities and companies.",
+        "url": "https://www.coursera.org",
+        "category": "General",
+        "type": "Platform",
+        "pricing": "Paid",
+        "level": "All Levels"
+    },
+    {
+        "title": "Udemy",
+        "description": "Marketplace for learning and teaching online.",
+        "url": "https://www.udemy.com",
+        "category": "General",
+        "type": "Platform",
+        "pricing": "Paid",
+        "level": "All Levels"
+    },
+    {
+        "title": "freeCodeCamp",
+        "description": "Learn to code for free with interactive challenges.",
+        "url": "https://www.freecodecamp.org",
+        "category": "General",
+        "type": "Platform",
+        "pricing": "Free",
+        "level": "Beginner"
+    },
+    {
+        "title": "Pluralsight",
+        "description": "Tech skills platform for developers and IT professionals.",
+        "url": "https://www.pluralsight.com",
+        "category": "General",
+        "type": "Platform",
+        "pricing": "Paid",
+        "level": "Intermediate"
+    },
+    {
+        "title": "Udacity",
+        "description": "Nanodegree programs in tech fields.",
+        "url": "https://www.udacity.com",
+        "category": "General",
+        "type": "Platform",
+        "pricing": "Paid",
+        "level": "Intermediate"
+    },
+    {
+        "title": "edX",
+        "description": "Access 2000+ free online courses from 140 leading institutions worldwide.",
+        "url": "https://www.edx.org",
+        "category": "General",
+        "type": "Platform",
+        "pricing": "Freemium",
+        "level": "All Levels"
+    },
+    {
+        "title": "Khan Academy",
+        "description": "A nonprofit with the mission to provide a free, world-class education for anyone, anywhere.",
+        "url": "https://www.khanacademy.org/computing/computer-programming",
+        "category": "General",
+        "type": "Platform",
+        "pricing": "Free",
+        "level": "Beginner"
+    },
+    {
+        "title": "Scrimba",
+        "description": "Learn to code with interactive screencasts.",
+        "url": "https://scrimba.com",
+        "category": "Frontend",
+        "type": "Platform",
+        "pricing": "Freemium",
+        "level": "Beginner"
+    },
+    {
+        "title": "Egghead.io",
+        "description": "Concise video courses for web developers.",
+        "url": "https://egghead.io",
+        "category": "Frontend",
+        "type": "Platform",
+        "pricing": "Paid",
+        "level": "Intermediate"
+    },
+    {
+        "title": "Full Stack Open",
+        "description": "Deep dive into modern web development (React, Redux, Node.js, MongoDB, GraphQL).",
+        "url": "https://fullstackopen.com/en/",
+        "category": "Fullstack",
+        "type": "Course",
+        "pricing": "Free",
+        "level": "Intermediate"
+    },
+    {
+        "title": "The Odin Project",
+        "description": "A full stack curriculum for aspiring web developers.",
+        "url": "https://www.theodinproject.com",
+        "category": "Fullstack",
+        "type": "Curriculum",
+        "pricing": "Free",
+        "level": "Beginner"
+    },
+    {
+        "title": "Roadmap.sh",
+        "description": "Community driven roadmaps, articles and resources for developers.",
+        "url": "https://roadmap.sh",
+        "category": "General",
+        "type": "Roadmap",
+        "pricing": "Free",
+        "level": "All Levels"
+    },
+    {
+        "title": "LeetCode",
+        "description": "Platform to help you enhance your skills, expand your knowledge and prepare for technical interviews.",
+        "url": "https://leetcode.com",
+        "category": "DSA",
+        "type": "Platform",
+        "pricing": "Freemium",
+        "level": "Intermediate"
+    }
+]

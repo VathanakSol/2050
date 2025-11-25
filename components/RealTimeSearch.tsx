@@ -4,6 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { SearchBar } from '@/components/SearchBar';
 import { SearchResults } from '@/components/SearchResults';
 import { searchInRealTime } from '@/app/actions/db';
+import { Header } from '@/components/layout/Header';
+import { Footer } from '@/components/layout/Footer';
 
 interface Result {
     id: string;
@@ -45,32 +47,13 @@ export default function RealTimeSearch() {
 
     return (
         <div className="min-h-screen flex flex-col bg-background font-sans text-foreground selection:bg-accent-yellow selection:text-black">
-            {/* Header */}
-            <header className="w-full py-5 px-4 sm:px-6 lg:px-8 bg-[#10162F] border-b border-gray-800">
-                <div className="max-w-7xl mx-auto flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-white text-[#10162F] flex items-center justify-center font-black text-2xl shadow-[4px_4px_0px_0px_#FFD300]">
-                            N
-                        </div>
-                        <h1 className="text-2xl font-bold text-white tracking-tight">
-                            NakTech
-                        </h1>
-                    </div>
-                    <nav className="hidden md:flex gap-8 text-sm font-bold text-white">
-                        <a href="#" className="hover:text-accent-yellow transition-colors">Catalog</a>
-                        <a href="#" className="hover:text-accent-yellow transition-colors">Resources</a>
-                        <a href="#" className="hover:text-accent-yellow transition-colors">Community</a>
-                        <a href="#" className="hover:text-accent-yellow transition-colors">Pricing</a>
-                    </nav>
-                </div>
-            </header>
 
             {/* Main Content */}
             <main className="flex-grow flex flex-col items-center px-4 sm:px-6 lg:px-8 pt-20 pb-12">
                 <div className="w-full max-w-3xl text-center mb-12">
                     {!query && (
                         <h2 className="text-5xl sm:text-6xl font-black text-white mb-6 tracking-tight">
-                            Find your <span className="text-accent-mint">tech</span> stack.
+                            Find your <span className="text-accent-yellow">tech</span> stack.
                         </h2>
                     )}
 
@@ -126,18 +109,7 @@ export default function RealTimeSearch() {
                 )}
             </main>
 
-            {/* Footer */}
-            <footer className="w-full py-8 bg-[#0A0E1F] border-t border-gray-800">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4">
-                    <p className="text-sm text-gray-400">
-                        &copy; {new Date().getFullYear()} NakTech Search.
-                    </p>
-                    <div className="flex gap-8 text-sm font-bold text-white">
-                        <a href="#" className="hover:text-accent-yellow">Privacy Policy</a>
-                        <a href="#" className="hover:text-accent-yellow">Terms of Service</a>
-                    </div>
-                </div>
-            </footer>
+            <Footer />
         </div>
     );
 }

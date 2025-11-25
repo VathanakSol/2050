@@ -16,3 +16,16 @@ model SearchResult {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
+
+model Resource {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  url         String
+  category    String
+  type        String
+  pricing     String
+  level       String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

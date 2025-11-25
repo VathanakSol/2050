@@ -3,25 +3,6 @@ import Link from 'next/link';
 export default function NotFound() {
     return (
         <div className="min-h-screen flex flex-col bg-background font-sans text-foreground selection:bg-accent-yellow selection:text-black">
-            {/* Header */}
-            <header className="w-full py-5 px-4 sm:px-6 lg:px-8 bg-[#10162F] border-b border-gray-800">
-                <div className="max-w-7xl mx-auto flex items-center justify-between">
-                    <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-                        <div className="w-10 h-10 bg-white text-[#10162F] flex items-center justify-center font-black text-2xl shadow-[4px_4px_0px_0px_#FFD300]">
-                            N
-                        </div>
-                        <h1 className="text-2xl font-bold text-white tracking-tight">
-                            NakTech
-                        </h1>
-                    </Link>
-                    <nav className="hidden md:flex gap-8 text-sm font-bold text-white">
-                        <a href="#" className="hover:text-accent-yellow transition-colors">Catalog</a>
-                        <a href="#" className="hover:text-accent-yellow transition-colors">Resources</a>
-                        <a href="#" className="hover:text-accent-yellow transition-colors">Community</a>
-                        <a href="#" className="hover:text-accent-yellow transition-colors">Pricing</a>
-                    </nav>
-                </div>
-            </header>
 
             {/* Main Content */}
             <main className="flex-grow flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 py-20">

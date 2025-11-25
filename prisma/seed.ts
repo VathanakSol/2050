@@ -1,6 +1,8 @@
 import { PrismaClient } from '@prisma/client';
 import mockData from '../data/mockData.json';
 
+import resourcesData from '../data/resources.json';
+
 const prisma = new PrismaClient();
 
 async function main() {
@@ -16,6 +18,13 @@ async function main() {
             },
         });
         console.log(`Created search result with id: ${result.id}`);
+    }
+
+    for (const resource of resourcesData) {
+        await (prisma as any).resource.create({
+            data: resource
+        });
+        console.log(`Created resource: ${resource.title}`);
     }
 
     console.log('Seeding finished.');
