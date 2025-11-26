@@ -12,7 +12,7 @@ export function Header() {
         { name: 'AI Chat', href: '/chat' },
         { name: 'JSON Generator', href: '/json-generator' },
         { name: 'Upload', href: '/upload' },
-        { name: 'About', href: '#' },
+        { name: 'About', href: '/about' },
     ];
 
     return (
