@@ -61,11 +61,11 @@ export function BetaToggle({ flagName = 'features_enabled', compact = false }: B
         <div className="flex items-center gap-2">
             <div className="flex flex-col">
                 <span className="text-xs font-bold text-[#00FFF0] uppercase tracking-wider">
-                    Beta Mode
+                    Beta
                 </span>
-                <span className="text-[10px] text-gray-400 font-mono">
+                {/* <span className="text-[10px] text-gray-400 font-mono">
                     {isEnabled ? 'Enabled' : 'Disabled'}
-                </span>
+                </span> */}
             </div>
 
             <button

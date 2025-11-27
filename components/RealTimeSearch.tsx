@@ -1,12 +1,15 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import ReactMarkdown from 'react-markdown';
 import { SearchBar } from '@/components/SearchBar';
 import { SearchResults } from '@/components/SearchResults';
 import { searchInRealTime } from '@/app/actions/db';
 import { getTechNews, NewsItem } from '@/app/actions/news';
 import { getMotivationalQuote } from '@/app/actions/quote';
+import { getAIAnswer } from '@/app/actions/ai-search';
 import { Footer } from '@/components/layout/Footer';
+import { getFeatureFlag } from '@/lib/featureFlags';
 
 interface Result {
     id: string;
@@ -28,6 +31,12 @@ export default function RealTimeSearch() {
     const [isNewsLoading, setIsNewsLoading] = useState(false);
     const [quote, setQuote] = useState<string>('');
     const [isQuoteLoading, setIsQuoteLoading] = useState(true);
+    const [aiAnswer, setAiAnswer] = useState<string | null>(null);
+    const [isAiLoading, setIsAiLoading] = useState(false);
+    const [activeTab, setActiveTab] = useState<'results' | 'ai'>('results');
+
+    // Check if AI features are enabled via beta flag
+    const isAIEnabled = getFeatureFlag('features_enabled');
 
     useEffect(() => {
         const fetchQuote = async () => {
@@ -50,33 +59,56 @@ export default function RealTimeSearch() {
     }, [newsSource, newsCategory]);
 
     useEffect(() => {
-        // Debounce search - wait 300ms after user stops typing
+        // Debounce search - wait 500ms after user stops typing
         const timeoutId = setTimeout(async () => {
             if (query.trim()) {
                 setIsLoading(true);
+                if (isAIEnabled) {
+                    setIsAiLoading(true);
+                    setAiAnswer(null);
+                }
+
                 try {
-                    const searchResults = await searchInRealTime(query);
+                    // Run search and optionally AI answer in parallel
+                    const promises: Promise<unknown>[] = [searchInRealTime(query)];
+                    if (isAIEnabled) {
+                        promises.push(getAIAnswer(query));
+                    }
+
+                    const results = await Promise.all(promises);
+                    const searchResults = results[0] as Result[];
+                    const aiResponse = isAIEnabled ? (results[1] as string) : null;
+
                     setResults(searchResults);
+                    if (isAIEnabled) {
+                        setAiAnswer(aiResponse);
+                    }
+
                 } catch (error) {
                     console.error('Search error:', error);
                     setResults([]);
                 } finally {
                     setIsLoading(false);
+                    if (isAIEnabled) {
+                        setIsAiLoading(false);
+                    }
                 }
             } else {
                 setResults([]);
+                setAiAnswer(null);
                 setIsLoading(false);
+                setIsAiLoading(false);
             }
-        }, 300);
+        }, 500);
 
         return () => clearTimeout(timeoutId);
-    }, [query]);
+    }, [query, isAIEnabled]);
 
     return (
-        <div className="min-h-screen flex flex-col bg-background font-sans text-foreground selection:bg-accent-yellow selection:text-black">
+        <div className="min-h-screen flex flex-col bg-[#10162F] font-sans text-foreground selection:bg-accent-yellow selection:text-black relative overflow-hidden">
 
             {/* Motivational Quote Banner */}
-            <div className="w-full bg-linear-to-r from-accent-yellow/10 via-accent-yellow/5 to-transparent border-b border-accent-yellow/20">
+            <div className="w-full bg-linear-to-r from-accent-yellow/10 via-accent-yellow/5 to-transparent border-b border-accent-yellow/20 relative z-10">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
                     {isQuoteLoading ? (
                         <div className="flex items-center justify-center gap-3">
@@ -95,7 +127,7 @@ export default function RealTimeSearch() {
             </div>
 
             {/* Main Content */}
-            <main className="flex-grow flex flex-col px-4 sm:px-6 lg:px-8 pt-20 pb-12">
+            <main className="flex-grow flex flex-col px-4 sm:px-6 lg:px-8 pt-20 pb-12 relative z-10">
                 <div className="w-full max-w-7xl mx-auto flex flex-col lg:flex-row gap-8 lg:gap-12">
 
                     {/* Left Column: Search & Results */}
@@ -127,32 +159,110 @@ export default function RealTimeSearch() {
                         )}
 
                         {query && (
-                            <div className="w-full">
-                                {isLoading ? (
-                                    <div className="w-full">
-                                        <div className="mb-4 text-gray-400 text-sm animate-pulse">
-                                            Searching...
+                            <div className="w-full space-y-6">
+                                {/* Tabs */}
+                                <div className="flex border-b border-gray-800 mb-6">
+                                    <button
+                                        onClick={() => setActiveTab('results')}
+                                        className={`px-6 py-3 text-sm font-bold uppercase tracking-wider border-b-2 transition-all ${activeTab === 'results' ? 'border-accent-yellow text-accent-yellow' : 'border-transparent text-gray-500 hover:text-gray-300'}`}
+                                    >
+                                        Search Results
+                                    </button>
+                                    {isAIEnabled && (
+                                        <button
+                                            onClick={() => setActiveTab('ai')}
+                                            className={`px-6 py-3 text-sm font-bold uppercase tracking-wider border-b-2 transition-all flex items-center gap-2 ${activeTab === 'ai' ? 'border-accent-yellow text-accent-yellow' : 'border-transparent text-gray-500 hover:text-gray-300'}`}
+                                        >
+                                            AI Insight
+                                            {isAiLoading && <div className="w-2 h-2 bg-accent-yellow rounded-full animate-pulse"></div>}
+                                        </button>
+                                    )}
+                                </div>
+
+                                {/* AI Answer Section */}
+                                {activeTab === 'ai' && (
+                                    <div className="w-full bg-[#111] border border-accent-yellow/30 rounded-lg p-6 shadow-[0_0_15px_rgba(255,211,0,0.1)] animate-fade-in-up min-h-[200px]">
+                                        <div className="flex items-center gap-2 mb-4">
+
+                                            <h3 className="text-accent-yellow font-bold uppercase tracking-wider text-sm">Power By Gemini</h3>
                                         </div>
-                                        <div className="space-y-4">
-                                            {[1, 2, 3].map((i) => (
-                                                <div key={i} className="relative p-6 bg-white/50 border-l-4 border-gray-300 animate-pulse">
-                                                    <div className="flex items-center justify-between mb-3">
-                                                        <div className="h-5 w-20 bg-gray-200 rounded"></div>
-                                                        <div className="h-4 w-32 bg-gray-200 rounded"></div>
-                                                    </div>
-                                                    <div className="mb-2 h-7 w-3/4 bg-gray-300 rounded"></div>
-                                                    <div className="space-y-2">
-                                                        <div className="h-4 w-full bg-gray-200 rounded"></div>
-                                                        <div className="h-4 w-5/6 bg-gray-200 rounded"></div>
-                                                    </div>
+                                        {isAiLoading ? (
+                                            <div className="space-y-2">
+                                                <div className="h-4 w-full bg-gray-800 rounded animate-pulse"></div>
+                                                <div className="h-4 w-5/6 bg-gray-800 rounded animate-pulse"></div>
+                                                <div className="h-4 w-4/6 bg-gray-800 rounded animate-pulse"></div>
+                                            </div>
+                                        ) : aiAnswer ? (
+                                            <div className="prose prose-invert prose-sm max-w-none text-gray-300">
+                                                <ReactMarkdown
+                                                    components={{
+                                                        a: ({ node, ...props }) => (
+                                                            <a {...props} target="_blank" rel="noopener noreferrer" className="text-accent-yellow hover:underline decoration-accent-yellow/50 underline-offset-4 transition-all" />
+                                                        ),
+                                                        ul: ({ node, ...props }) => (
+                                                            <ul {...props} className="list-disc list-inside space-y-1 my-2 marker:text-accent-yellow" />
+                                                        ),
+                                                        ol: ({ node, ...props }) => (
+                                                            <ol {...props} className="list-decimal list-inside space-y-1 my-2 marker:text-accent-yellow" />
+                                                        ),
+                                                        h3: ({ node, ...props }) => (
+                                                            <h3 {...props} className="text-lg font-bold text-white mt-4 mb-2 tracking-tight" />
+                                                        ),
+                                                        code: ({ node, className, children, ...props }) => {
+                                                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                                            const match = /language-(\w+)/.exec(className || '');
+                                                            const isInline = !match && !String(children).includes('\n');
+                                                            return isInline ? (
+                                                                <code {...props} className="bg-gray-800 text-accent-yellow px-1.5 py-0.5 rounded text-xs font-mono border border-gray-700">
+                                                                    {children}
+                                                                </code>
+                                                            ) : (
+                                                                <code {...props} className={className}>
+                                                                    {children}
+                                                                </code>
+                                                            );
+                                                        }
+                                                    }}
+                                                >
+                                                    {aiAnswer}
+                                                </ReactMarkdown>
+                                            </div>
+                                        ) : (
+                                            <div className="text-gray-500 italic">No AI insight available for this query.</div>
+                                        )}
+                                    </div>
+                                )}
+
+                                {/* Search Results Section */}
+                                {activeTab === 'results' && (
+                                    <>
+                                        {isLoading ? (
+                                            <div className="w-full">
+                                                <div className="mb-4 text-gray-400 text-sm animate-pulse">
+                                                    Searching...
                                                 </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <div className="animate-fade-in-up">
-                                        <SearchResults results={results} />
-                                    </div>
+                                                <div className="space-y-4">
+                                                    {[1, 2, 3].map((i) => (
+                                                        <div key={i} className="relative p-6 bg-white/5 border-l-4 border-gray-700 animate-pulse">
+                                                            <div className="flex items-center justify-between mb-3">
+                                                                <div className="h-5 w-20 bg-gray-700 rounded"></div>
+                                                                <div className="h-4 w-32 bg-gray-700 rounded"></div>
+                                                            </div>
+                                                            <div className="mb-2 h-7 w-3/4 bg-gray-600 rounded"></div>
+                                                            <div className="space-y-2">
+                                                                <div className="h-4 w-full bg-gray-700 rounded"></div>
+                                                                <div className="h-4 w-5/6 bg-gray-700 rounded"></div>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <div className="animate-fade-in-up">
+                                                <SearchResults results={results} />
+                                            </div>
+                                        )}
+                                    </>
                                 )}
                             </div>
                         )}
@@ -171,13 +281,13 @@ export default function RealTimeSearch() {
                                         onClick={() => { setNewsSource('hn'); setNewsCategory('latest'); }}
                                         className={`px-3 py-1.5 text-xs font-bold rounded-md transition-all whitespace-nowrap ${newsSource === 'hn' ? 'bg-accent-yellow text-black' : 'bg-[#111] text-gray-400 hover:text-white border border-gray-800'}`}
                                     >
-                                        HN
+                                        Hacker
                                     </button>
                                     <button
                                         onClick={() => { setNewsSource('devto'); setNewsCategory('latest'); }}
                                         className={`px-3 py-1.5 text-xs font-bold rounded-md transition-all whitespace-nowrap ${newsSource === 'devto' ? 'bg-accent-yellow text-black' : 'bg-[#111] text-gray-400 hover:text-white border border-gray-800'}`}
                                     >
-                                        DEV
+                                        Dev
                                     </button>
                                     <button
                                         onClick={() => { setNewsSource('reddit'); setNewsCategory('latest'); }}
@@ -225,16 +335,16 @@ export default function RealTimeSearch() {
                                             rel="noopener noreferrer"
                                             className="group block bg-[#111] border border-gray-800 hover:border-accent-yellow transition-all duration-200 hover:translate-x-1 overflow-hidden"
                                         >
-                                            
+
                                             <div className="p-4">
                                                 <div className="flex items-start justify-between gap-4">
                                                     <h4 className="font-medium text-gray-300 group-hover:text-accent-yellow transition-colors line-clamp-2 text-sm">
                                                         {item.title}
                                                     </h4>
                                                     <span className="text-xs font-mono text-gray-600 group-hover:text-gray-400 shrink-0">
-                                                        {item.source === 'Hacker News' ? 'HN' : 
-                                                         item.source === 'Dev.to' ? 'DEV' : 
-                                                         item.source === 'Reddit' ? 'RD' : 'GH'} ↗
+                                                        {item.source === 'Hacker News' ? 'HN' :
+                                                            item.source === 'Dev.to' ? 'DEV' :
+                                                                item.source === 'Reddit' ? 'RD' : 'GH'} ↗
                                                     </span>
                                                 </div>
                                             </div>

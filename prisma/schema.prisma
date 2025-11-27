@@ -29,29 +29,3 @@ model Resource {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
-
-model LearningPath {
-  id          String         @id @default(uuid())
-  title       String
-  description String
-  skill       String
-  icon        String
-  difficulty  String
-  duration    String
-  steps       LearningStep[]
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
-}
-
-model LearningStep {
-  id             String       @id @default(uuid())
-  title          String
-  description    String
-  order          Int
-  resources      String[]
-  estimatedHours Int
-  learningPathId String
-  learningPath   LearningPath @relation(fields: [learningPathId], references: [id], onDelete: Cascade)
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
-}
