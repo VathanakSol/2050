@@ -111,7 +111,7 @@ export function Header() {
                             NakTech
                         </h1>
                         <span className="px-2 py-0.5 text-[10px] font-black bg-[#FFD300] text-[#10162F] transform -rotate-6 border border-white shadow-[2px_2px_0px_0px_#FFFFFF]">
-                            v1.1
+                            v1.2
                         </span>
                     </div>
                 </div>

@@ -8,6 +8,7 @@ import { sendMessage, ChatMessage } from '@/app/actions/chat';
 export function ChatWindow() {
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [currentModel, setCurrentModel] = useState<'general' | 'code-fixer'>('general');
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     const scrollToBottom = () => {
@@ -29,13 +30,14 @@ export function ChatWindow() {
         setIsLoading(true);
 
         try {
-            // Send message to AI with conversation history
-            const response = await sendMessage(messages, message);
+            // Send message to AI with conversation history and selected model
+            const response = await sendMessage(messages, message, currentModel);
 
             // Add AI response to chat
             const aiMessage: ChatMessage = {
                 role: 'model',
                 parts: response,
+                model: currentModel,
             };
 
             setMessages((prev) => [...prev, aiMessage]);
@@ -46,6 +48,7 @@ export function ChatWindow() {
             const errorMessage: ChatMessage = {
                 role: 'model',
                 parts: 'Sorry, I encountered an error. Please try again.',
+                model: 'general',
             };
 
             setMessages((prev) => [...prev, errorMessage]);
@@ -54,19 +57,43 @@ export function ChatWindow() {
         }
     };
 
+    const ModelSwitcher = () => (
+        <div className="flex justify-center mb-6">
+            <div className="bg-gray-100 p-1 rounded-lg inline-flex border border-gray-200">
+                <button
+                    onClick={() => setCurrentModel('general')}
+                    className={`px-4 py-2 rounded-md text-sm font-bold transition-all ${currentModel === 'general'
+                        ? 'bg-white text-black shadow-sm border border-gray-200'
+                        : 'text-gray-500 hover:text-gray-900'
+                        }`}
+                >
+                    General
+                </button>
+                <button
+                    onClick={() => setCurrentModel('code-fixer')}
+                    className={`px-4 py-2 rounded-md text-sm font-bold transition-all flex items-center gap-2 ${currentModel === 'code-fixer'
+                        ? 'bg-[#10162F] text-accent-yellow shadow-sm'
+                        : 'text-gray-500 hover:text-gray-900'
+                        }`}
+                >
+                    <span>Code Fixer</span>
+                    {currentModel === 'code-fixer' && <span className="text-xs">🛠️</span>}
+                </button>
+            </div>
+        </div>
+    );
+
     if (messages.length === 0) {
         return (
             <div className="flex flex-col flex-grow border-2 border-black shadow-[8px_8px_0px_0px_#10162F] bg-[#10162F] h-full">
                 <div className="flex-grow flex items-center justify-center p-4">
                     <div className="w-full max-w-3xl space-y-6">
-
+                        <ModelSwitcher />
 
                         {/* Centered Input */}
                         <div className="bg-white border-2 border-white shadow-[6px_6px_0px_0px_#00FFF0] p-2">
                             <ChatInput onSend={handleSendMessage} disabled={isLoading} />
                         </div>
-
-
                     </div>
                 </div>
             </div>
@@ -78,11 +105,16 @@ export function ChatWindow() {
         <div className="flex flex-col flex-grow border-2 border-black shadow-[8px_8px_0px_0px_#10162F] bg-white h-full">
             {/* Chat Messages Area */}
             <div className="flex-grow overflow-y-auto md:p-6 bg-[#10162F] space-y-2">
+                <div className="sticky top-0 z-10 bg-[#10162F]/95 backdrop-blur-sm pb-4 pt-2">
+                    <ModelSwitcher />
+                </div>
+
                 {messages.map((msg, index) => (
                     <ChatMessageComponent
                         key={index}
                         role={msg.role}
                         content={msg.parts}
+                        model={msg.model}
                     />
                 ))}
 
@@ -93,7 +125,7 @@ export function ChatWindow() {
                             <div className="flex items-center gap-2 mb-4 pb-2 border-b border-gray-600/50">
                                 <div className="w-2 h-2 rounded-full bg-accent-mint animate-pulse"></div>
                                 <span className="text-xs font-bold opacity-70 uppercase tracking-wider">
-                                    Gemini AI
+                                    {currentModel === 'code-fixer' ? 'Code Fixer' : 'Gemini AI'}
                                 </span>
                             </div>
 
@@ -113,7 +145,9 @@ export function ChatWindow() {
                                     <div className="w-2 h-2 bg-accent-mint rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
                                     <div className="w-2 h-2 bg-accent-mint rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
                                 </div>
-                                <span className="text-xs text-gray-400 italic">Generating response...</span>
+                                <span className="text-xs text-gray-400 italic">
+                                    {currentModel === 'code-fixer' ? 'Fixing code...' : 'Generating response...'}
+                                </span>
                             </div>
                         </div>
                     </div>
