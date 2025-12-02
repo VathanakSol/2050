@@ -1,4 +1,5 @@
-import { S3Client, ListObjectsV2Command, GetObjectCommand } from "@aws-sdk/client-s3";
+import { S3Client, ListObjectsV2Command, DeleteObjectCommand, CopyObjectCommand } from "@aws-sdk/client-s3";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function GET() {
     try {
@@ -12,17 +13,16 @@ export async function GET() {
             },
         });
 
-        // List all objects in the uploads folder
+        // List all objects in the bucket (all public images)
         const listCommand = new ListObjectsV2Command({
             Bucket: process.env.R2_BUCKET!,
-            Prefix: "uploads/",
         });
 
         const response = await s3.send(listCommand);
 
         // Build public URLs for all images
         const images = (response.Contents || [])
-            .filter(item => item.Key && item.Key !== "uploads/") // Filter out folder itself
+            .filter(item => item.Key && item.Key !== "/") // Filter out folder itself
             .map(item => ({
                 url: `${process.env.R2_PUBLIC_URL}/${item.Key}`,
                 key: item.Key,
@@ -38,5 +38,112 @@ export async function GET() {
     } catch (error) {
         console.error("Error fetching images:", error);
         return Response.json({ images: [] });
+    }
+}
+
+export async function DELETE(request: NextRequest) {
+    try {
+        const body = await request.json();
+        const { key, password } = body;
+
+        // Verify password
+        const deletePassword = process.env.DELETE_PASSWORD;
+        if (!deletePassword || password !== deletePassword) {
+            return NextResponse.json(
+                { error: 'Invalid password' },
+                { status: 401 }
+            );
+        }
+
+        if (!key) {
+            return NextResponse.json(
+                { error: 'Image key is required' },
+                { status: 400 }
+            );
+        }
+
+        const s3 = new S3Client({
+            region: "auto",
+            endpoint: process.env.R2_ENDPOINT,
+            forcePathStyle: true,
+            credentials: {
+                accessKeyId: process.env.R2_ACCESS_KEY!,
+                secretAccessKey: process.env.R2_SECRET_KEY!,
+            },
+        });
+
+        // Delete the object from R2
+        const deleteCommand = new DeleteObjectCommand({
+            Bucket: process.env.R2_BUCKET!,
+            Key: key,
+        });
+
+        await s3.send(deleteCommand);
+
+        return NextResponse.json({ message: 'Image deleted successfully' });
+    } catch (error) {
+        console.error("Error deleting image:", error);
+        return NextResponse.json(
+            { error: 'Failed to delete image' },
+            { status: 500 }
+        );
+    }
+}
+
+export async function PUT(request: NextRequest) {
+    try {
+        const body = await request.json();
+        const { oldKey, newKey, password } = body;
+
+        // Verify password
+        const deletePassword = process.env.DELETE_PASSWORD;
+        if (!deletePassword || password !== deletePassword) {
+            return NextResponse.json(
+                { error: 'Invalid password' },
+                { status: 401 }
+            );
+        }
+
+        if (!oldKey || !newKey) {
+            return NextResponse.json(
+                { error: 'Both oldKey and newKey are required' },
+                { status: 400 }
+            );
+        }
+
+        const s3 = new S3Client({
+            region: "auto",
+            endpoint: process.env.R2_ENDPOINT,
+            forcePathStyle: true,
+            credentials: {
+                accessKeyId: process.env.R2_ACCESS_KEY!,
+                secretAccessKey: process.env.R2_SECRET_KEY!,
+            },
+        });
+
+        // 1. Copy object to new key
+        const copyCommand = new CopyObjectCommand({
+            Bucket: process.env.R2_BUCKET!,
+            CopySource: `${process.env.R2_BUCKET}/${oldKey}`,
+            Key: newKey,
+        });
+
+        await s3.send(copyCommand);
+
+        // 2. Delete old object
+        const deleteCommand = new DeleteObjectCommand({
+            Bucket: process.env.R2_BUCKET!,
+            Key: oldKey,
+        });
+
+        await s3.send(deleteCommand);
+
+        return NextResponse.json({ message: 'Image renamed successfully' });
+    } catch (error) {
+        console.error("Error renaming image:", error);
+        return NextResponse.json(
+            { error: 'Failed to rename image' },
+            { status: 500 }
+        );
     }
 }

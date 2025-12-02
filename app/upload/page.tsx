@@ -106,6 +106,13 @@ function UploadFeature() {
   const [previewImage, setPreviewImage] = useState<ImageData | null>(null);
   const [previewIndex, setPreviewIndex] = useState<number>(0);
 
+  // Delete modal states
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deletingImage, setDeletingImage] = useState<ImageData | null>(null);
+  const [deletePassword, setDeletePassword] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
+
   useEffect(() => {
     fetchImages();
   }, []);
@@ -319,7 +326,13 @@ function UploadFeature() {
             </p>
           </div>
 
-          <div className="flex items-center">
+          <div className="flex items-center gap-4">
+            <Link
+              href={"/manage-images"}
+              className="bg-[#FFD300] text-[#10162F] px-6 py-2 font-black uppercase tracking-wider border-2 border-white shadow-[4px_4px_0px_0px_#FFFFFF] hover:translate-y-1 hover:shadow-none active:translate-y-1 active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed transition-all whitespace-nowrap flex items-center gap-2"
+            >
+              Manage Images
+            </Link>
             <button
               onClick={() => setShowUploadModal(true)}
               className="bg-[#FFD300] text-[#10162F] px-6 py-2 font-black uppercase tracking-wider border-2 border-white shadow-[4px_4px_0px_0px_#FFFFFF] hover:translate-y-1 hover:shadow-none active:translate-y-1 active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed transition-all whitespace-nowrap flex items-center gap-2"
