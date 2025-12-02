@@ -226,9 +226,8 @@ function UploadFeature() {
       clearInterval(progressInterval);
       setNotification({
         type: "error",
-        message: `Upload failed: ${
-          error instanceof Error ? error.message : "Unknown error"
-        }`,
+        message: `Upload failed: ${error instanceof Error ? error.message : "Unknown error"
+          }`,
       });
     } finally {
       setIsUploading(false);
@@ -304,9 +303,8 @@ function UploadFeature() {
   return (
     <div className="min-h-screen p-4 md:p-8">
       <div
-        className={`max-w-7xl mx-auto mb-8 transition-all duration-300 ${
-          previewImage ? "mr-[420px]" : ""
-        }`}
+        className={`max-w-7xl mx-auto mb-8 transition-all duration-300 ${previewImage ? "mr-[420px]" : ""
+          }`}
       >
         <div className="flex items-center justify-between">
           <div>
@@ -347,9 +345,8 @@ function UploadFeature() {
 
       {isLoading ? (
         <div
-          className={`max-w-7xl mx-auto transition-all duration-300 ${
-            previewImage ? "mr-[420px]" : ""
-          }`}
+          className={`max-w-7xl mx-auto transition-all duration-300 ${previewImage ? "mr-[420px]" : ""
+            }`}
         >
           <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4 space-y-4">
             {[...Array(12)].map((_, i) => {
@@ -369,9 +366,8 @@ function UploadFeature() {
         </div>
       ) : (
         <div
-          className={`max-w-6xl container mx-auto transition-all duration-300 ${
-            previewImage ? "mr-[420px]" : ""
-          }`}
+          className={`max-w-6xl container mx-auto transition-all duration-300 ${previewImage ? "mr-[420px]" : ""
+            }`}
         >
           <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 2xl:columns-5 gap-3 space-y-3">
             {images.map((image, index) => (
@@ -509,11 +505,10 @@ function UploadFeature() {
                 className={`
                                     relative border-2 border-dashed rounded-xl p-10 text-center cursor-pointer
                                     transition-all duration-300 ease-out
-                                    ${
-                                      isDragging
-                                        ? "border-accent-mint bg-accent-mint/10 scale-[1.02] shadow-lg shadow-accent-mint/20"
-                                        : "border-gray-600 hover:border-accent-yellow hover:bg-accent-yellow/5 hover:shadow-lg"
-                                    }
+                                    ${isDragging
+                    ? "border-accent-mint bg-accent-mint/10 scale-[1.02] shadow-lg shadow-accent-mint/20"
+                    : "border-gray-600 hover:border-accent-yellow hover:bg-accent-yellow/5 hover:shadow-lg"
+                  }
                                 `}
               >
                 <input
@@ -530,16 +525,14 @@ function UploadFeature() {
                     {/* Icon with glow effect */}
                     <div className="flex justify-center">
                       <div
-                        className={`p-3 rounded-xl ${
-                          isDragging ? "bg-accent-mint/20" : "bg-gray-700/50"
-                        } transition-all duration-300`}
+                        className={`p-3 rounded-xl ${isDragging ? "bg-accent-mint/20" : "bg-gray-700/50"
+                          } transition-all duration-300`}
                       >
                         <svg
-                          className={`w-12 h-12 transition-all duration-300 ${
-                            isDragging
-                              ? "text-accent-mint scale-110"
-                              : "text-accent-yellow"
-                          }`}
+                          className={`w-12 h-12 transition-all duration-300 ${isDragging
+                            ? "text-accent-mint scale-110"
+                            : "text-accent-yellow"
+                            }`}
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -676,11 +669,10 @@ function UploadFeature() {
               {/* Notification */}
               {notification && (
                 <div
-                  className={`mt-5 p-4 rounded-lg border-2 animate-[fade-in_0.3s_ease-out] ${
-                    notification.type === "success"
-                      ? "bg-green-500/10 border-green-500 text-green-400"
-                      : "bg-red-500/10 border-red-500 text-red-400"
-                  }`}
+                  className={`mt-5 p-4 rounded-lg border-2 animate-[fade-in_0.3s_ease-out] ${notification.type === "success"
+                    ? "bg-green-500/10 border-green-500 text-green-400"
+                    : "bg-red-500/10 border-red-500 text-red-400"
+                    }`}
                 >
                   <div className="flex items-start gap-3">
                     {notification.type === "success" ? (
@@ -734,11 +726,10 @@ function UploadFeature() {
                   className={`
                                         flex-1 py-3 px-6 rounded-lg font-bold text-base
                                         transition-all duration-300 ease-out
-                                        ${
-                                          selectedFile && !isUploading
-                                            ? ""
-                                            : " text-gray-500 cursor-not-allowed opacity-50"
-                                        }
+                                        ${selectedFile && !isUploading
+                      ? ""
+                      : " text-gray-500 cursor-not-allowed opacity-50"
+                    }
                                     `}
                 >
                   {isUploading ? (
@@ -962,9 +953,8 @@ function UploadFeature() {
 
       {/* Preview Panel - Slides in from right */}
       <div
-        className={`fixed top-0 right-0 h-full w-full sm:w-[400px] sm:max-w-[400px] bg-card-bg border-l-2 border-accent-yellow/20 shadow-2xl transform transition-transform duration-300 ease-in-out z-40 ${
-          previewImage ? "translate-x-0" : "translate-x-full"
-        }`}
+        className={`fixed top-0 right-0 h-full w-full sm:w-[400px] sm:max-w-[400px] bg-card-bg border-l-2 border-accent-yellow/20 shadow-2xl transform transition-transform duration-300 ease-in-out z-40 ${previewImage ? "translate-x-0" : "translate-x-full"
+          }`}
       >
         {previewImage && (
           <div className="h-full flex flex-col">

@@ -1,6 +1,7 @@
 'use server';
 
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { parseCodeFixerResponse, parseAIResponse } from '@/lib/codeParser';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
@@ -8,9 +9,20 @@ export interface ChatMessage {
     role: 'user' | 'model';
     parts: string;
     model?: 'general' | 'code-fixer';
+    metadata?: {
+        originalCode?: string;
+        fixedCode?: string;
+        language?: string;
+        fileName?: string;
+    };
 }
 
-export async function sendMessage(history: ChatMessage[], message: string, modelType: 'general' | 'code-fixer' = 'general') {
+export async function sendMessage(
+    history: ChatMessage[],
+    message: string,
+    modelType: 'general' | 'code-fixer' = 'general',
+    file?: { name: string; content: string; language: string }
+) {
     try {
         const apiKey = process.env.GEMINI_API_KEY;
         if (!apiKey) {
@@ -19,8 +31,9 @@ export async function sendMessage(history: ChatMessage[], message: string, model
         }
 
         let systemInstruction = '';
-        if (modelType === 'code-fixer') {
+        let userMessage = message;
 
+        if (modelType === 'code-fixer') {
             systemInstruction = `You are an Elite Senior Software Engineer and Architectural Reviewer, specializing in code quality, security, and performance.
 
 **Your Mission:**
@@ -35,15 +48,25 @@ Your mission is to meticulously analyze provided code snippets, identify all pot
 
 **Response Structure (Mandatory Adherence):**
 1.  **Root Cause Analysis:** Identify the core problem(s) and their potential impact (e.g., error, security risk, performance degradation, maintainability burden). Be concise and direct.
-2.  **Corrected Code (Mandatory):** Present the *complete, corrected, and immediately runnable* code snippet. This must be a drop-in replacement or a clear, concise patch. Use the original language/framework. Ensure all changes are functional, idiomatic, robust, secure, performant, and directly resolve the identified issues. Always use standard markdown code blocks. **This section is paramount.**
+2.  **Corrected Code (Mandatory):** Present the *complete, corrected, and immediately runnable* code snippet. This must be a drop-in replacement or a clear, concise patch. Use the original language/framework. Ensure all changes are functional, idiomatic, robust, secure, performant, and directly resolve the identified issues. Always use standard markdown code blocks with the language specified. **This section is paramount.**
 3.  **Technical Explanation:** Elaborate on *what* was changed, *why* it fixes the problem, and *how* the fix improves the code (e.g., security, performance, readability, scalability). Use clear, technical language. Use bullet points for clarity. Explain any trade-offs or alternative considerations if relevant.
 4.  **Proactive Recommendations:** Offer 1-3 concrete, actionable best practices, design patterns, or architectural suggestions to prevent similar issues in the future or to further enhance the codebase's robustness.
+
+**IMPORTANT - Code Formatting:**
+- When showing the corrected code, use markdown code blocks with the language identifier
+- If the user provides the original code, you may optionally show both the original and fixed code in separate code blocks for comparison
+- Format: \`\`\`language\\ncode here\\n\`\`\`
 
 **Exceptional Cases:**
 -   **Optimal Code:** If the provided code is already optimal for its stated purpose, respond with "Code is optimal." followed by a brief, technical justification of its excellence. *However*, if there are minor *non-critical* improvements (e.g., style, very minor readability, slight performance gain without breaking functionality) that could be made, you may include them under "Proactive Recommendations" but still state "Code is optimal." initially.
 -   **Multiple Issues:** If multiple distinct issues are found, address each one sequentially within the "Root Cause Analysis," "Corrected Code," and "Technical Explanation" sections where appropriate, or merge fixes if they are interdependent.
 -   **Irrelevant Input:** If the input is not code or a code-related problem, politely but firmly decline and ask the user to provide code for analysis. Do not engage in general conversation.
-`
+`;
+
+            // If file is provided, prepend it to the message
+            if (file) {
+                userMessage = `File: ${file.name} (${file.language})\n\n\`\`\`${file.language}\n${file.content}\n\`\`\`\n\n${message}`;
+            }
         } else {
             systemInstruction = `You are a helpful and knowledgeable AI software developer assistant.
 Your goal is to help the user with their coding questions, explain concepts, and debug issues in a friendly and collaborative manner.
@@ -64,13 +87,15 @@ Your goal is to help the user with their coding questions, explain concepts, and
         });
 
         const chat = model.startChat({
-            history: history.map(msg => ({
-                role: msg.role,
-                parts: [{ text: msg.parts }],
-            })),
+            history: history
+                .filter(msg => msg.role !== 'user' || !msg.metadata?.fileName) // Filter out file upload context from history
+                .map(msg => ({
+                    role: msg.role,
+                    parts: [{ text: msg.parts }],
+                })),
         });
 
-        const result = await chat.sendMessage(message);
+        const result = await chat.sendMessage(userMessage);
         const response = await result.response;
         const text = response.text();
 
