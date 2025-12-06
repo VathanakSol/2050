@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Footer } from "@/components/layout/Footer";
 import { OnboardingForm } from "@/components/learning-path/OnboardingForm";
 import { RoadmapVisualization } from "@/components/learning-path/RoadmapVisualization";
 import {
@@ -69,7 +68,7 @@ function LearningPathFeature() {
     <div className="min-h-screen flex flex-col bg-background font-sans text-foreground selection:bg-accent-yellow selection:text-black">
       <main className="flex-grow px-4 sm:px-6 lg:px-8 py-12">
         <div className="max-w-7xl mx-auto">
-          
+
           {/* Error Display */}
           {error && (
             <div className="mb-6 p-6 bg-red-500/10 border-4 border-red-500 text-center animate-[fade-in-up_0.3s_ease-out]">
@@ -147,7 +146,6 @@ function LearningPathFeature() {
         </div>
       </main>
 
-      <Footer />
     </div>
   );
 }

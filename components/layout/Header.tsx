@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState, useRef } from 'react';
 import { BetaToggle } from '@/components/BetaToggle';
+import { DigitalClock } from '@/components/DigitalClock';
 
 const navIcons = {
     Home: (
@@ -167,15 +168,15 @@ export function Header() {
         <header className="w-full py-4 px-4 sm:px-6 lg:px-8 bg-[#10162F] border-b border-gray-800 relative z-30">
             <div className="max-w-7xl mx-auto flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-white text-[#10162F] flex items-center justify-center font-black text-2xl shadow-[4px_4px_0px_0px_#FFD300]">
-                        N
+                    <div className="w-10 h-10 bg-white text-[#10162F] flex items-center justify-center font-black text-xs shadow-[4px_4px_0px_0px_#FFD300]">
+                        2050
                     </div>
                     <div className="flex items-center gap-3">
                         <h1 className="text-2xl font-sans font-bold text-white tracking-tight">
                             Developer 2050
                         </h1>
                         <span className="px-2 py-0.5 text-[10px] font-black bg-[#FFD300] text-[#10162F] transform -rotate-6 border border-white shadow-[2px_2px_0px_0px_#FFFFFF]">
-                            v1.3
+                            v1.4
                         </span>
                     </div>
                 </div>
@@ -255,8 +256,9 @@ export function Header() {
                                 );
                             })}
                         </nav>
-                        <div className="border-l border-gray-700 pl-6">
+                        <div className="border-l border-gray-700 pl-6 flex items-center gap-4">
                             <BetaToggle flagName="features_enabled" />
+                            <DigitalClock />
                         </div>
                     </div>
 

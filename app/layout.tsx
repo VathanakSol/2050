@@ -3,6 +3,7 @@ import { Space_Grotesk, Kantumruy_Pro } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/layout/Header";
 import { Analytics } from "@vercel/analytics/react";
+import { Footer } from "@/components/layout/Footer";
 
 
 const spaceGrotesk = Space_Grotesk({
@@ -20,7 +21,7 @@ const kantumruy = Kantumruy_Pro({
 });
 
 export const metadata: Metadata = {
-  title: "Developer 2025",
+  title: "Developer 2050",
   description: "Future Platform For Developers",
 };
 
@@ -32,10 +33,13 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${spaceGrotesk.variable} ${spaceGrotesk.className} ${kantumruy.variable} antialiased`}
+        className={`${spaceGrotesk.variable} ${spaceGrotesk.className} ${kantumruy.variable} antialiased flex flex-col min-h-screen`}
       >
         <Header />
-        {children}
+        <main className="flex-grow">
+          {children}
+        </main>
+        <Footer />
         <Analytics />
       </body>
     </html>

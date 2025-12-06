@@ -145,11 +145,11 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
     }
 
     return (
-        <article className="min-h-screen max-w-6xl mx-auto bg-[#0F1530] dark:bg-[#0F1530]">
+        <article className="min-h-screen max-w-5xl mx-auto bg-[#0F1530] dark:bg-[#0F1530]">
             {/* Hero Section */}
-            <div className="w-full flex flex-col md:flex-row h-auto md:h-[500px]">
+            <div className="w-full flex flex-col md:flex-row h-auto md:h-[400px]">
                 {/* Left: Image */}
-                <div className="w-full md:w-1/2 relative h-[300px] md:h-full bg-gray-200">
+                <div className="w-full md:w-1/2 relative h-[250px] md:h-full bg-gray-200">
                     {post.mainImage ? (
                         <Image
                             src={urlFor(post.mainImage).url()}
@@ -172,9 +172,9 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                 </div>
 
                 {/* Right: Content */}
-                <div className="w-full md:w-1/2 bg-[#10162F] p-8 md:p-12 flex flex-col justify-between text-white relative">
+                <div className="w-full md:w-1/2 bg-[#10162F] p-6 md:p-10 flex flex-col justify-between text-white relative">
                     {/* Top Row: Category & Socials */}
-                    <div className="flex items-center justify-between mb-8">
+                    <div className="flex items-center justify-between mb-6">
                         <span className="text-xs py-1 rounded-full text-accent-yellow font-bold tracking-[0.2em] uppercase text-[#FFD300]">
                             {post.category.toUpperCase()}
                         </span>
@@ -186,7 +186,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                     </div>
 
                     {/* Title */}
-                    <h1 className="text-3xl md:text-5xl font-bold leading-tight mb-8">
+                    <h1 className="text-2xl md:text-4xl font-bold leading-tight mb-6">
                         {post.title}
                     </h1>
 
@@ -213,9 +213,9 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             <div className="w-full h-[1px] bg-[#FFD300] mt-16"></div>
             {/* Content Body */}
             <div className="container mx-auto px-4 md:px-8 text-white">
-                <div className="prose prose-lg dark:prose-invert mx-auto
+                <div className="prose dark:prose-invert mx-auto
                     prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-[#10162F] dark:prose-headings:text-white
-                    prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-p:leading-8
+                    prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-p:leading-7
                     prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline
                     prose-strong:text-[#10162F] dark:prose-strong:text-white
                     prose-li:marker:text-[#FFD300]
@@ -230,64 +230,86 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                                         return null
                                     }
                                     return (
-                                        <div className="relative w-full h-[500px] my-12 rounded-2xl overflow-hidden shadow-2xl group border border-white/10">
-                                            <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-500 z-10" />
-                                            <Image
-                                                src={urlFor(value).url()}
-                                                alt={value.alt || ' '}
-                                                fill
-                                                className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-                                            />
-                                        </div>
+                                        <figure className="my-10 md:my-12">
+                                            <div className="relative w-full overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)] group  transition-all duration-500">
+                                                {/* Aspect ratio container */}
+                                                <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
+
+
+
+
+                                                    {/* Image */}
+                                                    <Image
+                                                        src={urlFor(value).quality(100).url()}
+                                                        alt={value.alt || 'Blog post image'}
+                                                        fill
+                                                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1000px"
+                                                        className="object-cover"
+                                                        loading="lazy"
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            {/* Caption */}
+                                            {value.alt && (
+                                                <figcaption className="mt-4 text-center text-sm text-gray-400 italic px-4">
+                                                    <span className="inline-flex items-center gap-2">
+                                                        <span className="w-8 h-[1px] bg-accent-yellow/50"></span>
+                                                        {value.alt}
+                                                        <span className="w-8 h-[1px] bg-accent-yellow/50"></span>
+                                                    </span>
+                                                </figcaption>
+                                            )}
+                                        </figure>
                                     )
                                 }
                             },
                             block: {
                                 h2: ({ children }) => (
-                                    <h2 className="text-2xl md:text-4xl font-black mt-20 mb-8 text-[#FFD300] relative group inline-block">
+                                    <h2 className="text-xl md:text-3xl font-black mt-16 mb-6 text-[#FFD300] relative group inline-block">
                                         <span className="relative z-10 ">{children}</span>
                                         <span className="absolute -bottom-2 left-0 w-20 h-1 bg-white rounded-full group-hover:w-full transition-all duration-500 ease-out"></span>
                                     </h2>
                                 ),
                                 h3: ({ children }) => (
-                                    <h3 className="text-xl md:text-2xl font-extrabold mt-12 mb-6 text-[#FFD300] flex items-center gap-3">
+                                    <h3 className="text-lg md:text-xl font-extrabold mt-10 mb-4 text-[#FFD300] flex items-center gap-3">
                                         <span className="w-2 h-6 bg-white rounded-sm"></span>
                                         {children}
                                     </h3>
                                 ),
                                 blockquote: ({ children }) => (
-                                    <div className="relative my-12 pl-8 md:pl-12 border-l-4 border-[#FFD300]">
+                                    <div className="relative my-8 pl-6 md:pl-10 border-l-4 border-[#FFD300]">
                                         <div className="absolute -top-4 -left-3 bg-[#0F1530] p-2">
-                                            <svg className="w-8 h-8 text-[#FFD300]" fill="currentColor" viewBox="0 0 24 24">
+                                            <svg className="w-6 h-6 text-[#FFD300]" fill="currentColor" viewBox="0 0 24 24">
                                                 <path d="M14.017 21L14.017 18C14.017 16.8954 14.9124 16 16.017 16H19.017C19.5693 16 20.017 15.5523 20.017 15V9C20.017 8.44772 19.5693 8 19.017 8H15.017C14.4647 8 14.017 8.44772 14.017 9V11C14.017 11.5523 13.5693 12 13.017 12H12.017V5H22.017V15C22.017 18.3137 19.3307 21 16.017 21H14.017ZM5.0166 21L5.0166 18C5.0166 16.8954 5.91198 16 7.0166 16H10.0166C10.5689 16 11.0166 15.5523 11.0166 15V9C11.0166 8.44772 10.5689 8 10.0166 8H6.0166C5.46432 8 5.0166 8.44772 5.0166 9V11C5.0166 11.5523 4.56889 12 4.0166 12H3.0166V5H13.0166V15C13.0166 18.3137 10.3303 21 7.0166 21H5.0166Z" />
                                             </svg>
                                         </div>
-                                        <blockquote className="text-xl md:text-2xl italic text-gray-300 leading-relaxed">
+                                        <blockquote className="text-lg md:text-xl italic text-gray-300 leading-relaxed">
                                             "{children}"
                                         </blockquote>
                                     </div>
                                 ),
                                 normal: ({ children }) => (
-                                    <p className="text-lg md:text-xl leading-relaxed text-gray-300 mb-6">
+                                    <p className="text-base md:text-lg leading-relaxed text-gray-300 mb-6">
                                         {children}
                                     </p>
                                 ),
                             },
                             list: {
                                 bullet: ({ children }) => (
-                                    <ul className="space-y-3 my-6 pl-4">
+                                    <ul className="space-y-2 my-4 pl-4">
                                         {children}
                                     </ul>
                                 ),
                                 number: ({ children }) => (
-                                    <ol className="space-y-3 my-6 pl-4 list-decimal marker:text-[#FFD300] marker:font-bold text-gray-300 text-lg">
+                                    <ol className="space-y-2 my-4 pl-4 list-decimal marker:text-[#FFD300] marker:font-bold text-gray-300 text-base">
                                         {children}
                                     </ol>
                                 ),
                             },
                             listItem: {
                                 bullet: ({ children }) => (
-                                    <li className="flex items-start gap-3 text-lg text-gray-300">
+                                    <li className="flex items-start gap-3 text-base text-gray-300">
                                         <span className="mt-2.5 w-1.5 h-1.5 bg-[#FFD300] rounded-full shrink-0" />
                                         <span>{children}</span>
                                     </li>

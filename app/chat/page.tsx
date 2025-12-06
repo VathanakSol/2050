@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Footer } from '@/components/layout/Footer';
 import { ChatWindow } from '@/components/chat/general-chat/ChatWindow';
 import { getFeatureFlag } from '@/lib/featureFlags';
 
@@ -47,7 +46,7 @@ function ChatFeature() {
                     </div>
                 </main>
 
-                <Footer />
+
             </div >
         </>
     )

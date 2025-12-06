@@ -118,14 +118,14 @@ export default async function BlogPage() {
     const posts = await getPosts()
 
     return (
-        <div className="mx-auto container px-4 py-12 max-w-6xl">
-            <h1 className="text-4xl font-bold mb-12 border-b pb-4">Latest News</h1>
-            <div className="flex flex-col gap-8">
+        <div className="mx-auto container px-4 py-8 max-w-5xl">
+            <h1 className="text-3xl font-bold mb-8 border-b pb-4">Latest News</h1>
+            <div className="flex flex-col gap-6">
                 {posts.map((post: any) => (
                     <Link href={`/blog/${post.slug.current}`} key={post._id} className="group block">
-                        <div className="flex flex-col md:flex-row gap-6 items-start pb-8 border-b border-gray-100 dark:border-gray-800 last:border-0">
+                        <div className="flex flex-col md:flex-row gap-5 items-start pb-6 border-b border-gray-100 dark:border-gray-800 last:border-0">
                             {post.mainImage && (
-                                <div className="relative w-full md:w-[240px] h-[160px] flex-shrink-0 rounded-lg overflow-hidden bg-gray-100">
+                                <div className="relative w-full md:w-[200px] h-[130px] flex-shrink-0 rounded-lg overflow-hidden bg-gray-100">
                                     <Image
                                         src={urlFor(post.mainImage).url()}
                                         alt={post.title}
@@ -135,18 +135,18 @@ export default async function BlogPage() {
                                 </div>
                             )}
                             <div className="flex-1 flex flex-col pt-1">
-                                <div className="flex items-center gap-2 mb-2">
-                                    <span className=" text-gray-400 text-sm">
+                                <div className="flex items-center gap-2 mb-1">
+                                    <span className=" text-gray-400 text-xs">
                                         {post.category.toUpperCase()}
                                     </span>
                                 </div>
-                                <h2 className="text-xl md:text-2xl font-bold mb-3 text-accent-yellow dark:text-gray-100 transition-colors leading-tight">
+                                <h2 className="text-lg md:text-xl font-bold mb-2 text-accent-yellow dark:text-gray-100 transition-colors leading-tight">
                                     {post.title}
                                 </h2>
-                                <div className="flex items-center text-gray-500 text-sm mt-auto">
+                                <div className="flex items-center text-gray-500 text-xs mt-auto">
                                     <span className="font-medium mr-2">Developer 2050</span>
                                     <span>•</span>
-                                    <span className="ml-2 text-gray-400 text-sm">
+                                    <span className="ml-2 text-gray-400 text-xs">
                                         {getRelativeTime(post.publishedAt)}
                                     </span>
                                 </div>
