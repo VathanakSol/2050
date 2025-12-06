@@ -91,7 +91,14 @@ function UploadFeature() {
     message: string;
   } | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const categoryScrollRef = useRef<HTMLDivElement>(null);
+  const loadMoreRef = useRef<HTMLDivElement>(null);
+
+  // Infinite scroll state
+  const [displayedCount, setDisplayedCount] = useState(12);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
 
   // Download modal states
   const [showDownloadModal, setShowDownloadModal] = useState(false);
@@ -308,9 +315,71 @@ function UploadFeature() {
     }
   };
 
-  const filteredImages = images.filter((image) =>
-    image.key.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Extract unique categories from image keys (e.g., "nature-forest-1.jpg" -> "nature")
+  const extractCategory = (key: string): string => {
+    // Remove file extension
+    const nameWithoutExt = key.replace(/\.[^/.]+$/, '');
+    // Extract category (text before first hyphen or slash)
+    const match = nameWithoutExt.match(/^([^-\/]+)/);
+    return match ? match[1].charAt(0).toUpperCase() + match[1].slice(1) : 'Other';
+  };
+
+  const categories = ['All', ...Array.from(new Set(images.map(img => extractCategory(img.key)))).sort()];
+
+  const filteredImages = images.filter((image) => {
+    const matchesSearch = image.key.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = selectedCategory === 'All' || extractCategory(image.key) === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
+
+  const scrollCategories = (direction: 'left' | 'right') => {
+    if (categoryScrollRef.current) {
+      const scrollAmount = 300;
+      categoryScrollRef.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  // Infinite scroll - load more images
+  const loadMoreImages = () => {
+    if (isLoadingMore || displayedCount >= filteredImages.length) return;
+
+    setIsLoadingMore(true);
+    // Simulate loading delay for better UX
+    setTimeout(() => {
+      setDisplayedCount(prev => Math.min(prev + 6, filteredImages.length));
+      setIsLoadingMore(false);
+    }, 1000);
+  };
+
+  // Intersection Observer for infinite scroll
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          loadMoreImages();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (loadMoreRef.current) {
+      observer.observe(loadMoreRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [displayedCount, filteredImages.length, isLoadingMore]);
+
+  // Reset displayed count when filters change
+  useEffect(() => {
+    setDisplayedCount(12);
+  }, [searchQuery, selectedCategory]);
+
+  // Calculate progress towards goal
+  const TARGET_IMAGES = 2050;
+  const progressPercentage = Math.min((images.length / TARGET_IMAGES) * 100, 100);
 
   return (
     <div className="min-h-screen p-4 md:p-8">
@@ -318,56 +387,70 @@ function UploadFeature() {
         className={`max-w-7xl mx-auto mb-8 transition-all duration-300 ${previewImage ? "lg:mr-[420px]" : ""
           }`}
       >
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="w-full md:w-auto text-center md:text-left">
-            <h1 className="text-3xl md:text-5xl font-bold text-accent-yellow mb-2">
-              Stock Image
-            </h1>
-            <p className="text-gray-400 text-sm md:text-base">
-              Free stock photos and share your image{" "}
-              <span className="font-semibold text-accent-yellow">
-                OPEN SOURCE
-              </span>
-            </p>
-          </div>
+        <div className="flex flex-col gap-4">
+          {/* Title and Action Buttons Row */}
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="w-full md:w-auto text-center md:text-left">
+              <h1 className="text-2xl md:text-3xl font-bold text-accent-yellow mb-2">
+                Stock Image <span className="text-gray-400 font-semibold text-sm md:text-base">{images.length}/{TARGET_IMAGES}</span>
+              </h1>
+              <p className="text-gray-400 text-sm md:text-base">
+                Free stock photos and share your image{" "}
+                <span className="font-semibold text-sm md:text-base text-accent-yellow">
+                  OPEN SOURCE
+                </span>
+              </p>
 
-          <div className="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
-            <div className="relative w-full sm:w-auto sm:flex-1 md:w-64">
-              <input
-                type="text"
-                placeholder="Search images..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-card-bg border-2 border-gray-700 rounded-lg px-4 py-2 pl-10 text-white focus:border-accent-yellow focus:outline-none transition-colors"
-              />
-              <svg
-                className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
+              {/* Progress Bar */}
+              <div className="mt-3 space-y-1">
+                <div className="flex items-center justify-between text-xs text-gray-400">
+                  <div className="relative group">
+                    <span className="cursor-help border-b border-dotted border-gray-500 hover:border-accent-yellow transition-colors">
+                      Mission Complete
+                    </span>
+                    {/* Tooltip */}
+                    {progressPercentage < 100 && (
+                      <div className="absolute bottom-full left-0 mb-2 w-180 bg-gray-900 border-2 border-accent-yellow/50 rounded-lg p-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10 shadow-xl">
+                        <div className="flex items-start gap-2">
+
+                          <div className="text-xs">
+                            <p className="text-accent-yellow font-bold mb-1">🌟 Help Us Grow!</p>
+                            <p className="text-gray-300 leading-relaxed">
+                              We need <span className="text-accent-yellow font-semibold">{(TARGET_IMAGES - images.length).toLocaleString()} more images</span> to reach {TARGET_IMAGES.toLocaleString()}!
+                              Your contributions make this a rich, free resource for everyone.
+                            </p>
+                          </div>
+                        </div>
+                        {/* Tooltip arrow */}
+                        <div className="absolute top-full left-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-accent-yellow/50"></div>
+                      </div>
+                    )}
+                  </div>
+                  <span className="font-bold text-accent-yellow">{progressPercentage.toFixed(1)}%</span>
+                </div>
+                <div className="h-2 bg-gray-700 rounded-full overflow-hidden border border-gray-600 max-w-md">
+                  <div
+                    className={`h-full transition-all duration-500 ease-out ${progressPercentage >= 50 ? 'bg-green-500' : 'bg-accent-yellow'
+                      }`}
+                    style={{ width: `${progressPercentage}%` }}
+                  />
+                </div>
+              </div>
             </div>
 
-            <div className="flex items-center gap-2 sm:gap-4 w-full sm:w-auto justify-center">
+            <div className="flex items-center gap-2 w-full md:w-auto justify-center md:justify-end">
               <Link
-                href={"/manage-images"}
-                className="flex-1 sm:flex-none justify-center bg-[#FFD300] text-[#10162F] px-4 sm:px-6 py-2 font-black uppercase tracking-wider border-2 border-white shadow-[4px_4px_0px_0px_#FFFFFF] hover:translate-y-1 hover:shadow-none active:translate-y-1 active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed transition-all whitespace-nowrap flex items-center gap-2 text-sm sm:text-base"
+                href="/manage-images"
+                className="flex-1 sm:flex-none justify-center bg-[#FFD300] text-[#10162F] px-3 sm:px-4 py-1.5 font-black uppercase tracking-wider border-2 border-white shadow-[4px_4px_0px_0px_#FFFFFF] hover:translate-y-1 hover:shadow-none active:translate-y-1 active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed transition-all whitespace-nowrap flex items-center gap-2 text-xs sm:text-sm"
               >
                 Manage
               </Link>
               <button
                 onClick={() => setShowUploadModal(true)}
-                className="flex-1 sm:flex-none justify-center bg-[#FFD300] text-[#10162F] px-4 sm:px-6 py-2 font-black uppercase tracking-wider border-2 border-white shadow-[4px_4px_0px_0px_#FFFFFF] hover:translate-y-1 hover:shadow-none active:translate-y-1 active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed transition-all whitespace-nowrap flex items-center gap-2 text-sm sm:text-base"
+                className="flex-1 sm:flex-none justify-center bg-[#FFD300] text-[#10162F] px-3 sm:px-4 py-1.5 font-black uppercase tracking-wider border-2 border-white shadow-[4px_4px_0px_0px_#FFFFFF] hover:translate-y-1 hover:shadow-none active:translate-y-1 active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed transition-all whitespace-nowrap flex items-center gap-2 text-xs sm:text-sm"
               >
                 <svg
-                  className="w-5 h-5"
+                  className="w-4 h-4"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -382,6 +465,77 @@ function UploadFeature() {
                 Upload
               </button>
             </div>
+          </div>
+
+          <hr className="my-2 border-gray-800" />
+
+          {/* Search Bar */}
+          <div className="relative max-w-xl mx-auto w-full">
+            <input
+              type="text"
+              placeholder="Search images..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full bg-card-bg border-2 border-gray-700 rounded-lg px-4 py-2.5 pl-10 text-white focus:border-accent-yellow focus:outline-none transition-colors"
+            />
+            <svg
+              className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg>
+          </div>
+
+          {/* Category Carousel */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => scrollCategories('left')}
+              className="flex-shrink-0 p-2 rounded-lg hover:border-accent-yellow/50 hover:text-accent-yellow text-gray-400 transition-all"
+              aria-label="Scroll left"
+            >
+              <svg className="w-5 h-5 text-accent-yellow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+
+            <div className="flex-1 overflow-hidden">
+              <div
+                ref={categoryScrollRef}
+                className="flex items-center gap-2 overflow-x-auto scrollbar-hide scroll-smooth"
+                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+              >
+                <span className="text-sm text-gray-400 font-semibold flex-shrink-0">Categories:</span>
+                {categories.map((category) => (
+                  <button
+                    key={category}
+                    onClick={() => setSelectedCategory(category)}
+                    className={`px-3 py-1.5 rounded-lg font-semibold text-xs transition-all flex-shrink-0 ${selectedCategory === category
+                      ? 'bg-accent-yellow text-[#10162F] shadow-md'
+                      : 'bg-card-bg border border-gray-700 text-gray-300 hover:border-accent-yellow/50 hover:text-accent-yellow'
+                      }`}
+                  >
+                    {category}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <button
+              onClick={() => scrollCategories('right')}
+              className="flex-shrink-0 p-2 rounded-lg hover:border-accent-yellow/50 hover:text-accent-yellow text-gray-400 transition-all"
+              aria-label="Scroll right"
+            >
+              <svg className="w-5 h-5 text-accent-yellow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
           </div>
         </div>
       </div>
@@ -413,7 +567,7 @@ function UploadFeature() {
             }`}
         >
           <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 2xl:columns-5 gap-3 space-y-3">
-            {filteredImages.map((image, index) => (
+            {filteredImages.slice(0, displayedCount).map((image, index) => (
               <div
                 key={image.key}
                 className="break-inside-avoid group relative bg-card-bg rounded-lg overflow-hidden hover:scale-[1.02] transition-all duration-300 cursor-pointer shadow-md hover:shadow-accent-yellow/2"
@@ -476,6 +630,37 @@ function UploadFeature() {
               </div>
             ))}
           </div>
+
+          {/* Loading More Skeleton */}
+          {isLoadingMore && (
+            <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 2xl:columns-5 gap-3 space-y-3 mt-3">
+              {[...Array(6)].map((_, i) => {
+                const heights = [250, 300, 350, 280, 320, 270];
+                const height = heights[i % heights.length];
+                return (
+                  <div
+                    key={`skeleton-${i}`}
+                    className="break-inside-avoid bg-card-bg rounded-lg overflow-hidden animate-pulse"
+                    style={{ height: `${height}px` }}
+                  >
+                    <div className="w-full h-full bg-gray-700" />
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Intersection Observer Target */}
+          {displayedCount < filteredImages.length && (
+            <div ref={loadMoreRef} className="h-10 w-full" />
+          )}
+
+          {/* End Message */}
+          {displayedCount >= filteredImages.length && filteredImages.length > 0 && (
+            <div className="text-center py-8 text-gray-400">
+              <p className="text-sm">You've reached the end! 🎉</p>
+            </div>
+          )}
         </div>
       )}
 
@@ -1215,21 +1400,8 @@ function ComingSoon() {
 
         {/* Main Heading */}
         <h1 className="text-2xl md:text-4xl lg:text-5xl font-black tracking-tighter leading-tight">
-          SOMETHING <br />
-          <span className="text-accent-yellow drop-shadow-sm">
-            EPIC
-          </span> IS <br />
-          <span className="text-transparent bg-clip-text bg-accent-yellow">
-            BREWING
-          </span>
+          COMING SOON
         </h1>
-
-        {/* Subtext */}
-        <p className="text-lg md:text-xl text-gray-400 font-medium max-w-xl mx-auto leading-relaxed">
-          Our <span className="text-accent-mint font-bold">Upload</span> is
-          getting a major upgrade. Stay tuned for a smarter, faster coding
-          experience.
-        </p>
 
         {/* CTA Button */}
         <div className="pt-8">

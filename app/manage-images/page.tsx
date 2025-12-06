@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 
 interface ImageData {
     url: string;
@@ -61,9 +62,24 @@ export default function ManageImages() {
     const [newFilename, setNewFilename] = useState("");
     const [isRenaming, setIsRenaming] = useState(false);
 
+    // Pagination state
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage, setItemsPerPage] = useState(5);
+
     const filteredImages = images.filter((img) =>
         img.key.toLowerCase().includes(searchQuery.toLowerCase())
     );
+
+    // Pagination calculations
+    const totalPages = Math.ceil(filteredImages.length / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const paginatedImages = filteredImages.slice(startIndex, endIndex);
+
+    // Reset to page 1 when search query changes
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchQuery]);
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -281,7 +297,7 @@ export default function ManageImages() {
                                         </td>
                                     </tr>
                                 ) : (
-                                    filteredImages.map((img) => (
+                                    paginatedImages.map((img) => (
                                         <tr key={img.key} className="hover:bg-gray-800/30 transition-colors">
                                             <td className="p-4">
                                                 <div className="w-16 h-16 relative rounded-lg overflow-hidden bg-gray-900 border border-gray-700">
@@ -328,6 +344,102 @@ export default function ManageImages() {
                             </tbody>
                         </table>
                     </div>
+
+                    {/* Pagination Controls */}
+                    {filteredImages.length > 0 && (
+                        <div className="flex flex-col md:flex-row items-center justify-between gap-4 p-4 bg-gray-800/30 border-t border-gray-700">
+                            <div className="flex items-center gap-4">
+                                <span className="text-sm text-gray-400">
+                                    Showing <span className="text-[#FFD300] font-semibold">{startIndex + 1}</span> to{" "}
+                                    <span className="text-[#FFD300] font-semibold">{Math.min(endIndex, filteredImages.length)}</span> of{" "}
+                                    <span className="text-[#FFD300] font-semibold">{filteredImages.length}</span> images
+                                </span>
+                                <div className="flex items-center gap-2">
+                                    <label htmlFor="itemsPerPage" className="text-sm text-gray-400">
+                                        Per page:
+                                    </label>
+                                    <select
+                                        id="itemsPerPage"
+                                        value={itemsPerPage}
+                                        onChange={(e) => {
+                                            setItemsPerPage(Number(e.target.value));
+                                            setCurrentPage(1);
+                                        }}
+                                        className="bg-[#10162F] border border-gray-600 focus:border-[#FFD300] rounded-lg px-3 py-1 text-white focus:outline-none transition-all"
+                                    >
+                                        <option value={5}>5</option>
+                                        <option value={10}>10</option>
+                                        <option value={20}>20</option>
+                                        <option value={50}>50</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div className="flex items-center gap-2">
+                                <button
+                                    onClick={() => setCurrentPage(1)}
+                                    disabled={currentPage === 1}
+                                    className="px-3 py-1 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    First
+                                </button>
+                                <button
+                                    onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+                                    disabled={currentPage === 1}
+                                    className="px-3 py-1 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    <ArrowLeft />
+                                </button>
+
+                                <div className="flex items-center gap-1">
+                                    {Array.from({ length: totalPages }, (_, i) => i + 1)
+                                        .filter((page) => {
+                                            // Show first page, last page, current page, and pages around current
+                                            return (
+                                                page === 1 ||
+                                                page === totalPages ||
+                                                Math.abs(page - currentPage) <= 1
+                                            );
+                                        })
+                                        .map((page, index, array) => {
+                                            // Add ellipsis between non-consecutive pages
+                                            const showEllipsisBefore = index > 0 && page - array[index - 1] > 1;
+                                            return (
+                                                <div key={page} className="flex items-center gap-1">
+                                                    {showEllipsisBefore && (
+                                                        <span className="px-2 text-gray-500">...</span>
+                                                    )}
+                                                    <button
+                                                        onClick={() => setCurrentPage(page)}
+                                                        className={`px-3 py-1 rounded-lg font-semibold transition-colors ${currentPage === page
+                                                            ? "bg-[#FFD300] text-[#10162F]"
+                                                            : "bg-gray-700 hover:bg-gray-600 text-white"
+                                                            }`}
+                                                    >
+                                                        {page}
+                                                    </button>
+                                                </div>
+                                            );
+                                        })}
+                                </div>
+
+                                <button
+                                    onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
+                                    disabled={currentPage === totalPages}
+                                    className="px-3 py-1 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    <ArrowRight />
+                                </button>
+                                <button
+                                    onClick={() => setCurrentPage(totalPages)}
+                                    disabled={currentPage === totalPages}
+                                    className="px-3 py-1 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    Last
+                                </button>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
 

@@ -53,3 +53,13 @@ body {
   color: var(--foreground);
   font-family: var(--font-space-grotesk), var(--font-sans), Arial, Helvetica, sans-serif;
 }
+
+/* Hide scrollbar for category carousel */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
