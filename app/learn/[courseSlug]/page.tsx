@@ -32,11 +32,6 @@ export default async function CourseOverviewPage({ params }: PageProps) {
 
     if (!course) return <div>Course not found</div>;
 
-    // Optional: Redirect to first lesson automatically
-    // const firstLesson = course.modules?.[0]?.lessons?.[0];
-    // if (firstLesson) {
-    //     redirect(`/learn/${params.courseSlug}/${firstLesson.slug.current}`);
-    // }
 
     return (
         <div className="space-y-8">

@@ -9,7 +9,6 @@ import { getTechNews, NewsItem } from '@/app/actions/news';
 import { getMotivationalQuote } from '@/app/actions/quote';
 import { getAIAnswer } from '@/app/actions/ai-search';
 import { getFeatureFlag } from '@/lib/featureFlags';
-import { CountdownBanner } from '@/components/CountdownBanner';
 
 interface Result {
     id: string;
@@ -108,8 +107,6 @@ export default function RealTimeSearch() {
         <div className="min-h-screen flex flex-col bg-[#10162F] font-sans text-foreground selection:bg-accent-yellow selection:text-black relative overflow-hidden">
 
 
-            {/* Countdown Banner */}
-            <CountdownBanner />
             {/* Motivational Quote Banner */}
             <div className="w-full bg-[#10162F] border-y border-accent-yellow/20 relative z-10">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">

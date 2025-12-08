@@ -62,6 +62,11 @@ const navIcons = {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
         </svg>
     ),
+    Learn: (
+        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+        </svg>
+    ),
 };
 
 const toolsItems = [
@@ -72,6 +77,7 @@ const toolsItems = [
 const developerHubItems = [
     { name: 'Learning Paths', href: '/learning-path' },
     { name: 'Resources', href: '/resources' },
+    { name: 'Learn', href: '/learn' },
 ];
 
 export function Header() {
@@ -176,7 +182,7 @@ export function Header() {
                             Developer 2050
                         </h1>
                         <span className="px-2 py-0.5 text-[10px] font-black bg-[#FFD300] text-[#10162F] transform -rotate-6 border border-white shadow-[2px_2px_0px_0px_#FFFFFF]">
-                            v1.4
+                            v1.5
                         </span>
                     </div>
                 </div>
