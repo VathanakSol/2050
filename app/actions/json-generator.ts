@@ -6,7 +6,7 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
 export async function generateRequestBody(prompt: string) {
     try {
-        const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+        const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash-lite' });
         const result = await model.generateContent(`Generate a valid JSON request body for the following description: "${prompt}". Return ONLY the JSON string, no markdown formatting.`);
         const response = await result.response;
         let text = response.text();

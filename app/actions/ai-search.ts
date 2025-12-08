@@ -21,7 +21,7 @@ export async function getAIAnswer(query: string) {
     }
 
     try {
-        const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+        const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash-lite' });
 
         const prompt = `You are an AI co-pilot designed to assist a senior software developer with general IT knowledge, concepts, and best practices. Your goal is to provide highly relevant, forward-thinking, and technically precise answers.
 

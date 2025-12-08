@@ -6,7 +6,7 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
 export async function getMotivationalQuote(): Promise<string> {
     try {
-        const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+        const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash-lite' });
 
         const prompt = `Generate a short, inspiring motivational quote for developers and tech enthusiasts. 
         The quote should be original, concise (max 15 words), and related to technology, coding, innovation, or personal growth.

@@ -34,11 +34,11 @@ function ChatFeature() {
                 <main className="flex-grow px-4 sm:px-6 lg:px-8 py-12 flex flex-col">
                     <div className="max-w-7xl mx-auto w-full flex-grow flex flex-col">
                         <div className="mb-8 text-center">
-                            <h1 className="text-4xl sm:text-5xl font-black text-[#10162F] mb-4 tracking-tight">
-                                <span className="text-accent-yellow">Developer Chat</span>
+                            <h1 className="text-2xl sm:text-3xl font-black text-[#10162F] mb-4 tracking-tight">
+                                <span className="text-accent-yellow">DEVELOPER CHAT</span>
                             </h1>
-                            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                                Your AI pair programmer. Ask questions, debug code, and brainstorm ideas.
+                            <p className="text-md text-gray-600 max-w-2xl mx-auto">
+                                Ask questions, fix or debug code, and brainstorm ideas.
                             </p>
                         </div>
 

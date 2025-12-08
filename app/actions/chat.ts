@@ -82,7 +82,7 @@ Your goal is to help the user with their coding questions, explain concepts, and
         }
 
         const model = genAI.getGenerativeModel({
-            model: 'gemini-2.5-flash',
+            model: 'gemini-2.5-flash-lite',
             systemInstruction: systemInstruction,
         });
 
