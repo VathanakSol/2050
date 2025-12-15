@@ -392,7 +392,7 @@ function UploadFeature() {
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="w-full md:w-auto text-center md:text-left">
               <h1 className="text-2xl md:text-3xl font-bold text-accent-yellow mb-2">
-                Stock Image <span className="text-gray-400 font-semibold text-sm md:text-base">{images.length}/{TARGET_IMAGES}</span>
+                Stock Image
               </h1>
               <p className="text-gray-400 text-sm md:text-base">
                 Free stock photos and share your image{" "}

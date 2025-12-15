@@ -6,12 +6,12 @@ export interface NewsItem {
     id: string;
     title: string;
     url: string;
-    source: 'Hacker News' | 'Dev.to' | 'Reddit' | 'GitHub';
+    source: 'Hacker News' | 'Dev.to' | 'Reddit' | 'GitHub' | 'Product Hunt';
     points?: string;
     author?: string;
 }
 
-type Source = 'hn' | 'devto' | 'reddit' | 'github';
+type Source = 'hn' | 'devto' | 'reddit' | 'github' | 'producthunt';
 type Category = 'latest' | 'top' | 'show' | 'ask';
 
 export async function getTechNews(source: Source = 'hn', category: Category = 'latest'): Promise<NewsItem[]> {
@@ -38,6 +38,8 @@ export async function getTechNews(source: Source = 'hn', category: Category = 'l
             }
         } else if (source === 'github') {
             url = 'https://github.com/trending';
+        } else if (source === 'producthunt') {
+            url = 'https://www.producthunt.com/feed';
         }
 
         const response = await fetch(url, {
@@ -64,65 +66,89 @@ export async function getTechNews(source: Source = 'hn', category: Category = 'l
                 });
             });
         } else {
-            const html = await response.text();
-            const $ = cheerio.load(html);
+            const text = await response.text();
 
-            if (source === 'hn') {
-                $('.athing').each((i, element) => {
+            if (source === 'producthunt') {
+                const $ = cheerio.load(text, { xmlMode: true });
+                $('entry').each((i, element) => {
                     if (i >= 10) return false;
 
-                    const titleElement = $(element).find('.titleline > a').first();
-                    const title = titleElement.text();
-                    const url = titleElement.attr('href');
-                    const id = $(element).attr('id') || `hn-${i}`;
+                    const title = $(element).find('title').text();
+                    const url = $(element).find('link').attr('href');
+                    const id = $(element).find('id').text() || `ph-${i}`;
 
                     if (title && url) {
                         news.push({
                             id,
                             title,
                             url,
-                            source: 'Hacker News',
+                            source: 'Product Hunt', // This string literal is valid per interface below, but let's update interface too if strict
                         });
                     }
                 });
-            } else if (source === 'devto') {
-                $('.crayons-story').each((i, element) => {
-                    if (i >= 10) return false;
+            } else {
+                const $ = cheerio.load(text);
 
-                    const titleElement = $(element).find('.crayons-story__title > a');
-                    const title = titleElement.text().trim();
-                    const relativeUrl = titleElement.attr('href');
-                    const url = relativeUrl ? `${relativeUrl}` : '';
-                    const id = `devto-${i}`;
+                if (source === 'hn') {
+                    // ... existing HN parsing ...
+                    $('.athing').each((i, element) => {
+                        if (i >= 10) return false;
 
-                    if (title && url) {
-                        news.push({
-                            id,
-                            title,
-                            url,
-                            source: 'Dev.to',
-                        });
-                    }
-                });
-            } else if (source === 'github') {
-                $('article.Box-row').each((i, element) => {
-                    if (i >= 10) return false;
+                        const titleElement = $(element).find('.titleline > a').first();
+                        const title = titleElement.text();
+                        const url = titleElement.attr('href');
+                        const id = $(element).attr('id') || `hn-${i}`;
 
-                    const titleElement = $(element).find('h2 a');
-                    const title = titleElement.text().trim().replace(/\s+/g, ' ');
-                    const relativeUrl = titleElement.attr('href');
-                    const url = relativeUrl ? `https://github.com${relativeUrl}` : '';
-                    const id = `github-${i}`;
+                        if (title && url) {
+                            news.push({
+                                id,
+                                title,
+                                url,
+                                source: 'Hacker News',
+                            });
+                        }
+                    });
+                } else if (source === 'devto') {
+                    // ... existing Dev.to parsing ...
+                    $('.crayons-story').each((i, element) => {
+                        if (i >= 10) return false;
 
-                    if (title && url) {
-                        news.push({
-                            id,
-                            title,
-                            url,
-                            source: 'GitHub',
-                        });
-                    }
-                });
+                        const titleElement = $(element).find('.crayons-story__title > a');
+                        const title = titleElement.text().trim();
+                        const relativeUrl = titleElement.attr('href');
+                        const url = relativeUrl ? `${relativeUrl}` : '';
+                        const id = `devto-${i}`;
+
+                        if (title && url) {
+                            news.push({
+                                id,
+                                title,
+                                url,
+                                source: 'Dev.to',
+                            });
+                        }
+                    });
+                } else if (source === 'github') {
+                    // ... existing GitHub parsing ...
+                    $('article.Box-row').each((i, element) => {
+                        if (i >= 10) return false;
+
+                        const titleElement = $(element).find('h2 a');
+                        const title = titleElement.text().trim().replace(/\s+/g, ' ');
+                        const relativeUrl = titleElement.attr('href');
+                        const url = relativeUrl ? `https://github.com${relativeUrl}` : '';
+                        const id = `github-${i}`;
+
+                        if (title && url) {
+                            news.push({
+                                id,
+                                title,
+                                url,
+                                source: 'GitHub',
+                            });
+                        }
+                    });
+                }
             }
         }
 

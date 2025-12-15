@@ -15,13 +15,13 @@ interface Course {
     icon: string;
 }
 
-export async function getAIAnswer(query: string) {
+export async function getAIAnswer(query: string, modelName: string = 'gemini-2.5-flash') {
     if (!process.env.GEMINI_API_KEY) {
         return null;
     }
 
     try {
-        const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash-lite' });
+        const model = genAI.getGenerativeModel({ model: modelName });
 
         const prompt = `You are an AI co-pilot designed to assist a senior software developer with general IT knowledge, concepts, and best practices. Your goal is to provide highly relevant, forward-thinking, and technically precise answers.
 

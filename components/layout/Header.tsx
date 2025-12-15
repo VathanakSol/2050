@@ -5,6 +5,8 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useState, useRef } from 'react';
 import { BetaToggle } from '@/components/BetaToggle';
 import { DigitalClock } from '@/components/DigitalClock';
+import { useTheme } from 'next-themes';
+import { Sun, Moon } from 'lucide-react';
 
 const navIcons = {
     Home: (
@@ -89,11 +91,18 @@ export function Header() {
     const [mobileDevHubOpen, setMobileDevHubOpen] = useState(false);
     const toolsDropdownRef = useRef<HTMLDivElement>(null);
     const devHubDropdownRef = useRef<HTMLDivElement>(null);
+    const { theme, setTheme } = useTheme();
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     const navItems = [
         { name: 'Home', href: '/' },
         { name: 'Developer Hub', href: '#', isDropdown: true, dropdownType: 'devhub' },
         { name: 'Tools', href: '#', isDropdown: true, dropdownType: 'tools' },
+        { name: 'Playground', href: '/playground' },
         { name: 'AI Chat', href: '/chat' },
         { name: 'Blog', href: '/blog' },
         { name: 'Upload', href: '/upload' },
@@ -171,25 +180,25 @@ export function Header() {
     }, [mobileOpen]);
 
     return (
-        <header className="w-full py-4 px-4 sm:px-6 lg:px-8 bg-[#10162F] border-b border-gray-800 relative z-30">
+        <header className="w-full py-4 px-4 sm:px-6 lg:px-8 bg-background border-b border-gray-800 relative z-30 transition-colors duration-300">
             <div className="max-w-7xl mx-auto flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-white text-[#10162F] flex items-center justify-center font-black text-xs shadow-[4px_4px_0px_0px_#FFD300]">
+                    <div className="w-10 h-10 bg-foreground text-background flex items-center justify-center font-black text-xs shadow-[4px_4px_0px_0px_#FFD300]">
                         2050
                     </div>
                     <div className="flex items-center gap-3">
-                        <h1 className="text-2xl font-sans font-bold text-white tracking-tight">
+                        <h1 className="text-2xl font-sans font-bold text-foreground tracking-tight">
                             Developer 2050
                         </h1>
-                        <span className="px-2 py-0.5 text-[10px] font-black bg-[#FFD300] text-[#10162F] transform -rotate-6 border border-white shadow-[2px_2px_0px_0px_#FFFFFF]">
-                            v1.5
+                        <span className="px-2 py-0.5 text-[10px] font-black bg-accent-yellow text-[#10162F] transform -rotate-6 border border-white shadow-[2px_2px_0px_0px_#FFFFFF]">
+                            v1.7
                         </span>
                     </div>
                 </div>
 
                 <div className="flex items-center gap-4">
                     <div className="hidden md:flex items-center gap-6">
-                        <nav className="flex gap-6 text-sm font-medium text-white">
+                        <nav className="flex gap-6 text-sm font-medium text-foreground">
                             {navItems.map((item) => {
                                 if (item.isDropdown) {
                                     const isDevHub = item.dropdownType === 'devhub';
@@ -221,7 +230,7 @@ export function Header() {
                                                         setDevHubOpen(false);
                                                     }
                                                 }}
-                                                className={`flex items-center gap-1 transition-colors hover:text-accent-yellow ${isActive ? 'text-accent-yellow font-semibold' : 'text-white/80'}`}
+                                                className={`flex items-center gap-1 transition-colors hover:text-accent-yellow ${isActive ? 'text-accent-yellow font-semibold' : 'text-foreground/80'}`}
                                             >
                                                 {item.name}
                                                 <svg className={`w-4 h-4 transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -231,7 +240,7 @@ export function Header() {
 
                                             {dropdownOpen && (
                                                 <div
-                                                    className="absolute top-full mt-2 left-0 w-56 bg-[#0F1530] border border-gray-700 rounded-lg shadow-xl overflow-hidden z-50"
+                                                    className="absolute top-full mt-2 left-0 w-56 bg-card-bg border border-gray-700 rounded-lg shadow-xl overflow-hidden z-50"
                                                     onMouseLeave={() => setDropdownOpen(false)}
                                                 >
                                                     {dropdownItems.map((dropdownItem) => (
@@ -239,7 +248,7 @@ export function Header() {
                                                             key={dropdownItem.name}
                                                             href={dropdownItem.href}
                                                             onClick={() => setDropdownOpen(false)}
-                                                            className={`flex items-center gap-3 px-4 py-3 text-sm font-medium transition-colors ${pathname === dropdownItem.href ? 'text-accent-yellow bg-[#FFD300]/10' : 'text-white/90 hover:text-accent-yellow hover:bg-white/5'}`}
+                                                            className={`flex items-center gap-3 px-4 py-3 text-sm font-medium transition-colors ${pathname === dropdownItem.href ? 'text-accent-yellow bg-accent-yellow/10' : 'text-foreground/90 hover:text-accent-yellow hover:bg-foreground/5'}`}
                                                         >
                                                             {navIcons[dropdownItem.name as keyof typeof navIcons]}
                                                             {dropdownItem.name}
@@ -255,7 +264,7 @@ export function Header() {
                                     <Link
                                         key={item.name}
                                         href={item.href}
-                                        className={`transition-colors hover:text-accent-yellow ${pathname === item.href ? 'text-accent-yellow font-semibold' : 'text-white/80'}`}
+                                        className={`transition-colors hover:text-accent-yellow ${pathname === item.href ? 'text-accent-yellow font-semibold' : 'text-foreground/80'}`}
                                     >
                                         {item.name}
                                     </Link>
@@ -265,6 +274,15 @@ export function Header() {
                         <div className="border-l border-gray-700 pl-6 flex items-center gap-4">
                             <BetaToggle flagName="features_enabled" />
                             <DigitalClock />
+                            {mounted && (
+                                <button
+                                    onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                                    className="p-2 rounded-full hover:bg-foreground/10 text-foreground/80 hover:text-accent-yellow transition-all"
+                                    aria-label="Toggle Theme"
+                                >
+                                    {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+                                </button>
+                            )}
                         </div>
                     </div>
 
@@ -273,7 +291,7 @@ export function Header() {
                         aria-expanded={mobileOpen}
                         aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
                         onClick={() => setMobileOpen((s) => !s)}
-                        className="md:hidden p-2 rounded-md bg-white/5 hover:bg-white/10 text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white/30"
+                        className="md:hidden p-2 rounded-md bg-foreground/5 hover:bg-foreground/10 text-foreground focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-foreground/30"
                     >
                         <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             {mobileOpen ? (
@@ -300,7 +318,7 @@ export function Header() {
                         aria-label="Mobile navigation"
                         className="fixed left-1/2 transform -translate-x-1/2 top-20 z-50 w-[min(640px,calc(100%-32px))]"
                     >
-                        <div className="rounded-lg bg-[#0F1530] border border-gray-800 shadow-lg overflow-hidden">
+                        <div className="rounded-lg bg-card-bg border border-gray-800 shadow-lg overflow-hidden">
                             <nav className="flex flex-col p-4 gap-2">
                                 {navItems.map((item) => {
                                     if (item.isDropdown) {
@@ -316,7 +334,7 @@ export function Header() {
                                             <div key={item.name}>
                                                 <button
                                                     onClick={() => setDropdownOpen(!dropdownOpen)}
-                                                    className={`flex items-center justify-between w-full px-4 py-2 rounded text-sm font-semibold ${isActive ? 'text-accent-yellow' : 'text-white/90 hover:text-accent-yellow'}`}
+                                                    className={`flex items-center justify-between w-full px-4 py-2 rounded text-sm font-semibold ${isActive ? 'text-accent-yellow' : 'text-foreground/90 hover:text-accent-yellow'}`}
                                                 >
                                                     <div className="flex items-center gap-3">
                                                         {navIcons[iconKey as keyof typeof navIcons]}
@@ -334,7 +352,7 @@ export function Header() {
                                                                 key={dropdownItem.name}
                                                                 href={dropdownItem.href}
                                                                 onClick={() => setMobileOpen(false)}
-                                                                className={`flex items-center gap-3 w-full px-4 py-2 rounded text-sm font-medium ${pathname === dropdownItem.href ? 'text-accent-yellow bg-[#FFD300]/10' : 'text-white/70 hover:text-accent-yellow'}`}
+                                                                className={`flex items-center gap-3 w-full px-4 py-2 rounded text-sm font-medium ${pathname === dropdownItem.href ? 'text-accent-yellow bg-accent-yellow/10' : 'text-foreground/70 hover:text-accent-yellow'}`}
                                                             >
                                                                 {navIcons[dropdownItem.name as keyof typeof navIcons]}
                                                                 {dropdownItem.name}
@@ -351,7 +369,7 @@ export function Header() {
                                             key={item.name}
                                             href={item.href}
                                             onClick={() => setMobileOpen(false)}
-                                            className={`flex items-center gap-3 w-full px-4 py-2 rounded text-sm font-semibold ${pathname === item.href ? 'text-accent-yellow' : 'text-white/90 hover:text-accent-yellow'}`}
+                                            className={`flex items-center gap-3 w-full px-4 py-2 rounded text-sm font-semibold ${pathname === item.href ? 'text-accent-yellow' : 'text-foreground/90 hover:text-accent-yellow'}`}
                                         >
                                             {navIcons[item.name as keyof typeof navIcons]}
                                             {item.name}
@@ -363,6 +381,15 @@ export function Header() {
                             <div className="border-t border-gray-700 px-4 py-3">
                                 <div className="flex items-center justify-between">
                                     <BetaToggle flagName="features_enabled" />
+                                    {mounted && (
+                                        <button
+                                            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                                            className="p-2 rounded-full hover:bg-foreground/10 text-foreground/80 hover:text-accent-yellow transition-all"
+                                            aria-label="Toggle Theme"
+                                        >
+                                            {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         </div>

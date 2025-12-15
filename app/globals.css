@@ -1,11 +1,24 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
+  /* Light Mode */
+  --background: #ffffff;
+  --foreground: #0f172a;
+  --card-bg: #f1f5f9;
+  --accent-yellow: #eab308;
+  /* Darker yellow for visibility against white */
+  --accent-blue: #3B00B9;
+  --accent-mint: #0d9488;
+  /* Darker mint */
+}
+
+.dark {
+  /* Dark Mode (Original Values) */
   --background: #10162F;
-  /* Codecademy Dark Navy */
   --foreground: #FFFFFF;
   --card-bg: #1F2937;
-  /* Slightly lighter for cards */
   --accent-yellow: #FFD300;
   --accent-blue: #3B00B9;
   --accent-mint: #00FFF0;
