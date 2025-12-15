@@ -9,14 +9,14 @@ export default function NotFound() {
                 <div className="text-center max-w-2xl">
                     {/* 404 Number */}
                     <div className="mb-8">
-                        <h1 className="text-[150px] sm:text-[200px] font-black text-white leading-none tracking-tight">
+                        <h1 className="text-[150px] sm:text-[200px] font-black text-gray-900 dark:text-white leading-none tracking-tight">
                             404
                         </h1>
                         <div className="h-2 w-32 bg-accent-yellow mx-auto -mt-8"></div>
                     </div>
 
                     {/* Error Message */}
-                    <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
+                    <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
                         Page Not Found
                     </h2>
                     <p className="text-lg text-gray-400 mb-8 max-w-md mx-auto">
@@ -33,21 +33,7 @@ export default function NotFound() {
                         </Link>
                     </div>
 
-                    {/* Suggested Links */}
-                    <div className="mt-12 pt-8 border-t border-gray-800">
-                        <p className="text-sm text-gray-500 uppercase tracking-widest mb-4">Popular Searches</p>
-                        <div className="flex flex-wrap justify-center gap-3">
-                            {['React', 'Next.js', 'Docker', 'TypeScript', 'Prisma'].map((tag) => (
-                                <Link
-                                    key={tag}
-                                    href={`/?q=${encodeURIComponent(tag)}`}
-                                    className="px-4 py-2 text-sm font-bold bg-[#1F2937] text-white border border-gray-700 hover:bg-white hover:text-[#10162F] hover:border-white transition-all duration-200"
-                                >
-                                    {tag}
-                                </Link>
-                            ))}
-                        </div>
-                    </div>
+
                 </div>
             </main>
 

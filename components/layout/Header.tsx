@@ -39,7 +39,7 @@ const navIcons = {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
         </svg>
     ),
-    'JSON Generator': (
+    'Mini Postman': (
         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
         </svg>
@@ -72,7 +72,7 @@ const navIcons = {
 };
 
 const toolsItems = [
-    { name: 'JSON Generator', href: '/json-generator' },
+    { name: 'Mini Postman', href: '/mini-postman' },
     { name: 'Remove BG', href: '/remove-background' },
 ];
 
@@ -191,7 +191,7 @@ export function Header() {
                             Developer 2050
                         </h1>
                         <span className="px-2 py-0.5 text-[10px] font-black bg-accent-yellow text-[#10162F] transform -rotate-6 border border-white shadow-[2px_2px_0px_0px_#FFFFFF]">
-                            v1.7
+                            v1.8
                         </span>
                     </div>
                 </div>
