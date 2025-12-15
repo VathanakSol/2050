@@ -97,39 +97,19 @@ function LearningPathFeature() {
           {/* Loading State */}
           {isGenerating && (
             <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/50 backdrop-blur-sm animate-[fade-in-up_0.5s_ease-out]">
-              <div className="max-w-2xl w-full mx-4">
-                <div className="bg-card-bg border-4 border-accent-yellow shadow-[8px_8px_0px_0px_#FFD300] p-8 md:p-12">
-                  <div className="text-center space-y-6">
-                    <div className="relative inline-block">
-                      <div className="w-20 h-20 bg-gradient-to-br from-accent-yellow to-accent-mint rounded-full flex items-center justify-center animate-spin">
-                        <div className="w-16 h-16 bg-card-bg rounded-full flex items-center justify-center">
-                          <span className="text-3xl">⚡</span>
-                        </div>
-                      </div>
-                      <div className="absolute -inset-2 bg-gradient-to-r from-accent-blue via-accent-yellow to-accent-mint rounded-full opacity-20 animate-pulse"></div>
-                    </div>
-                    <div className="space-y-3">
-                      <h2 className="text-2xl md:text-3xl font-black text-white">
-                        Generating Your Roadmap...
-                      </h2>
-                      <p className="text-lg text-gray-400 max-w-md mx-auto">
-                        AI is crafting a personalized learning path tailored
-                        just for you
-                      </p>
-                      <div className="flex justify-center space-x-1 mt-4">
-                        <div className="w-2 h-2 bg-accent-yellow rounded-full animate-bounce"></div>
-                        <div
-                          className="w-2 h-2 bg-accent-mint rounded-full animate-bounce"
-                          style={{ animationDelay: "0.1s" }}
-                        ></div>
-                        <div
-                          className="w-2 h-2 bg-accent-blue rounded-full animate-bounce"
-                          style={{ animationDelay: "0.2s" }}
-                        ></div>
-                      </div>
+              <div className="bg-white dark:bg-[#1a1b1e] rounded-lg shadow-xl p-8 max-w-sm w-full mx-4 text-center border border-gray-100 dark:border-gray-800">
+                <div className="flex justify-center mb-6">
+                  <div className="relative">
+                    <div className="w-16 h-16 border-4 border-gray-100 dark:border-gray-800 border-t-accent-yellow rounded-full animate-spin"></div>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <span className="text-xl">✨</span>
                     </div>
                   </div>
                 </div>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Creating Your Path</h3>
+                <p className="text-gray-500 dark:text-gray-400 text-sm">
+                  Analyzing your profile and generating a personalized roadmap...
+                </p>
               </div>
             </div>
           )}

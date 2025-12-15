@@ -27,6 +27,8 @@
     "diff": "^8.0.2",
     "dockerode": "^4.0.9",
     "framer-motion": "^12.23.24",
+    "html-to-image": "^1.11.13",
+    "jspdf": "^3.0.4",
     "lucide-react": "^0.555.0",
     "next": "16.0.10",
     "next-sanity": "^11.6.10",

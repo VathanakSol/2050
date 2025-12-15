@@ -17,34 +17,34 @@ interface Course {
 function CourseSkeleton() {
     return (
         <div className="w-full flex-shrink-0 px-2">
-            <div className="bg-gradient-to-br from-[#1a1f3a] to-[#10162F] p-4 md:p-5 rounded-xl border-2 border-gray-700">
+            <div className="bg-white dark:bg-gradient-to-br dark:from-[#1a1f3a] dark:to-[#10162F] p-4 md:p-5 rounded-xl border-2 border-gray-200 dark:border-gray-700 shadow-sm dark:shadow-none">
                 <div className="flex flex-col md:flex-row gap-4 animate-pulse">
                     {/* Icon Skeleton */}
                     <div className="flex-shrink-0">
-                        <div className="w-14 h-14 bg-gray-700 rounded-xl"></div>
+                        <div className="w-14 h-14 bg-gray-200 dark:bg-gray-700 rounded-xl"></div>
                     </div>
 
                     {/* Content Skeleton */}
                     <div className="flex-grow space-y-3">
                         <div className="flex flex-wrap items-start justify-between gap-3">
                             <div className="space-y-1.5 flex-grow">
-                                <div className="h-2.5 bg-gray-700 rounded w-20"></div>
-                                <div className="h-6 bg-gray-700 rounded w-3/4"></div>
+                                <div className="h-2.5 bg-gray-200 dark:bg-gray-700 rounded w-20"></div>
+                                <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
                             </div>
-                            <div className="h-5 w-20 bg-gray-700 rounded-full"></div>
+                            <div className="h-5 w-20 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
                         </div>
 
                         <div className="space-y-1.5">
-                            <div className="h-3 bg-gray-700 rounded w-full"></div>
-                            <div className="h-3 bg-gray-700 rounded w-5/6"></div>
+                            <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-full"></div>
+                            <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-5/6"></div>
                         </div>
 
                         <div className="flex gap-3">
-                            <div className="h-3 bg-gray-700 rounded w-16"></div>
-                            <div className="h-3 bg-gray-700 rounded w-20"></div>
+                            <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-16"></div>
+                            <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-20"></div>
                         </div>
 
-                        <div className="h-9 bg-gray-700 rounded w-32"></div>
+                        <div className="h-9 bg-gray-200 dark:bg-gray-700 rounded w-32"></div>
                     </div>
                 </div>
             </div>
@@ -84,21 +84,8 @@ export function PopularCourses() {
         }
     }, [loading, courses.length]);
 
-    const getLevelColor = (level: string) => {
-        switch (level) {
-            case 'Beginner':
-                return 'text-green-400 bg-green-400/10 border-green-400/30';
-            case 'Intermediate':
-                return 'text-yellow-400 bg-yellow-400/10 border-yellow-400/30';
-            case 'Advanced':
-                return 'text-red-400 bg-red-400/10 border-red-400/30';
-            default:
-                return 'text-gray-400 bg-gray-400/10 border-gray-400/30';
-        }
-    };
-
     return (
-        <div className="w-full bg-gradient-to-br from-[#0a0e1f] via-[#10162F] to-[#0a0e1f] border-b-2 border-accent-yellow/30 py-8 relative overflow-hidden">
+        <div className="w-full bg-gray-50 dark:bg-gradient-to-br dark:from-[#0a0e1f] dark:via-[#10162F] dark:to-[#0a0e1f] border-b-2 border-gray-200 dark:border-accent-yellow/30 py-8 relative overflow-hidden transition-colors duration-300">
             {/* Animated Background Pattern */}
             <div className="absolute inset-0 opacity-5">
                 <div className="absolute inset-0" style={{
@@ -113,20 +100,15 @@ export function PopularCourses() {
                     0% { transform: translate(0, 0); }
                     100% { transform: translate(50px, 50px); }
                 }
-                @keyframes glow {
-                    0%, 100% { box-shadow: 0 0 20px rgba(255, 211, 0, 0.3); }
-                    50% { box-shadow: 0 0 40px rgba(255, 211, 0, 0.6); }
-                }
             `}</style>
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                 {/* Header */}
                 <div className="text-center mb-6">
-
-                    <h2 className="text-3xl md:text-4xl font-black text-white mb-2">
+                    <h2 className="text-3xl md:text-4xl font-black text-gray-900 dark:text-white mb-2">
                         Follow Up Latest <span className="text-accent-yellow">Technologies</span>
                     </h2>
-                    <p className="text-gray-400 text-sm max-w-2xl mx-auto">
+                    <p className="text-gray-600 dark:text-gray-400 text-sm max-w-2xl mx-auto">
                         {loading
                             ? 'AI is curating the best courses for you...'
                             : 'Discover trending courses powered by AI recommendations. Start your learning journey today.'
@@ -146,7 +128,7 @@ export function PopularCourses() {
                             >
                                 {courses.map((course) => (
                                     <div key={course.id} className="w-full flex-shrink-0 px-2">
-                                        <div className="bg-[#1a1f3a] p-4 md:p-5 rounded-xl border-2 border-gray-700 hover:border-accent-yellow transition-all duration-300 hover:shadow-[0_0_30px_rgba(255,211,0,0.2)] group">
+                                        <div className="bg-white dark:bg-[#1a1f3a] p-4 md:p-5 rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-accent-yellow dark:hover:border-accent-yellow transition-all duration-300 hover:shadow-lg dark:hover:shadow-[0_0_30px_rgba(255,211,0,0.2)] group">
                                             <div className="flex flex-col md:flex-row gap-4">
                                                 {/* Icon Section */}
                                                 <div className="flex-shrink-0">
@@ -162,17 +144,15 @@ export function PopularCourses() {
                                                             <span className="text-accent-yellow text-xs font-bold uppercase tracking-wider mb-1.5 block">
                                                                 {course.category}
                                                             </span>
-                                                            <h3 className="text-xl font-black text-white group-hover:text-accent-yellow transition-colors">
+                                                            <h3 className="text-xl font-black text-gray-900 dark:text-white group-hover:text-accent-yellow transition-colors">
                                                                 {course.title}
                                                             </h3>
                                                         </div>
-
                                                     </div>
 
-                                                    <p className="text-gray-400 text-sm mb-3 leading-relaxed">
+                                                    <p className="text-gray-600 dark:text-gray-400 text-sm mb-3 leading-relaxed">
                                                         {course.description}
                                                     </p>
-
                                                 </div>
                                             </div>
                                         </div>
@@ -187,7 +167,7 @@ export function PopularCourses() {
                         <>
                             <button
                                 onClick={() => setCurrentIndex((prev) => (prev === 0 ? courses.length - 1 : prev - 1))}
-                                className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 text-accent-yellow transition-all z-10 hover:scale-110"
+                                className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 text-gray-400 dark:text-accent-yellow hover:text-accent-yellow transition-all z-10 hover:scale-110"
                             >
                                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M15 19l-7-7 7-7" />
@@ -195,7 +175,7 @@ export function PopularCourses() {
                             </button>
                             <button
                                 onClick={() => setCurrentIndex((prev) => (prev + 1) % courses.length)}
-                                className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 text-accent-yellow transition-all z-10 hover:scale-110"
+                                className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 text-gray-400 dark:text-accent-yellow hover:text-accent-yellow transition-all z-10 hover:scale-110"
                             >
                                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" />
@@ -210,7 +190,7 @@ export function PopularCourses() {
                                         onClick={() => setCurrentIndex(index)}
                                         className={`transition-all duration-300 rounded-full ${currentIndex === index
                                             ? 'w-8 h-2 bg-accent-yellow'
-                                            : 'w-2 h-2 bg-gray-600 hover:bg-gray-500'
+                                            : 'w-2 h-2 bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500'
                                             }`}
                                         aria-label={`Go to course ${index + 1}`}
                                     />

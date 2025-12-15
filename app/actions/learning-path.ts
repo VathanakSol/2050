@@ -52,7 +52,7 @@ export async function generateLearningPath(profile: UserProfile): Promise<Learni
             return { error: 'API key not configured' };
         }
 
-        const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash-lite' });
+        const model = genAI.getGenerativeModel({ model: 'gemini-robotics-er-1.5-preview' });
 
         const prompt = `You are a senior software engineering mentor creating a personalized learning roadmap.
 

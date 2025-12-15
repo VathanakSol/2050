@@ -40,11 +40,11 @@ export function MilestoneCard({
                 <div className="flex items-start justify-between gap-4">
                     <div className="flex-1">
                         <div className="flex items-center gap-3 mb-2">
-                            <h3 className="text-2xl font-black text-white">
+                            <h3 className="text-2xl font-black text-gray-900 dark:text-white">
                                 {milestone.title}
                             </h3>
                         </div>
-                        <p className="text-gray-400 mb-4">{milestone.description}</p>
+                        <p className="text-gray-700 dark:text-gray-400 mb-4">{milestone.description}</p>
 
                         <div className="flex flex-wrap gap-3 items-center">
                             <span className={`px-3 py-1 border-2 ${difficultyConfig.bg} ${difficultyConfig.color} border-current font-bold text-sm`}>
@@ -70,7 +70,7 @@ export function MilestoneCard({
                     {milestone.skills.map((skill, index) => (
                         <span
                             key={index}
-                            className="px-3 py-1 bg-accent-blue text-white font-bold text-xs border-2 border-white"
+                            className="px-3 py-1 bg-accent-yellow text-white font-bold text-xs border-2 border-white"
                         >
                             {skill}
                         </span>
@@ -84,7 +84,7 @@ export function MilestoneCard({
                     {/* Tasks List */}
                     {milestone.tasks.length > 0 && (
                         <div className="mb-6">
-                            <h4 className="text-xl font-black text-white mb-3">
+                            <h4 className="text-xl font-black text-gray-900 dark:text-white mb-3">
                                 ✅ Tasks to Complete
                             </h4>
 
@@ -95,7 +95,7 @@ export function MilestoneCard({
                                         className="flex items-start gap-3 p-3 border-2 border-gray-700"
                                     >
                                         <span className="text-accent-yellow font-bold">•</span>
-                                        <span className="flex-1 text-white font-medium">
+                                        <span className="flex-1 dark:text-white text-gray-700 font-medium">
                                             {task}
                                         </span>
                                     </div>
@@ -107,7 +107,7 @@ export function MilestoneCard({
                     {/* Learning Resources */}
                     {milestone.resources.length > 0 && (
                         <div>
-                            <h4 className="text-xl font-black text-white mb-3">📚 Learning Resources</h4>
+                            <h4 className="text-xl font-black text-gray-900 dark:text-white mb-3">📚 Learning Resources</h4>
                             <div className="grid gap-3">
                                 {milestone.resources.map((resource, index) => (
                                     <a
@@ -115,13 +115,13 @@ export function MilestoneCard({
                                         href={resource.url}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="block p-4 border-3 border-white bg-card-bg hover:bg-white/5 hover:shadow-[4px_4px_0px_0px_#FFD300] transition-all group"
+                                        className="block p-4 border-3 dark:border-gray-700 border-white bg-card-bg hover:bg-white/5 hover:shadow-[4px_4px_0px_0px_#FFD300] transition-all group"
                                     >
                                         <div className="flex items-start justify-between gap-3">
                                             <div className="flex-1">
                                                 <div className="flex items-center gap-2 mb-1">
                                                     <span className="text-xl">{RESOURCE_TYPE_EMOJI[resource.type]}</span>
-                                                    <h5 className="font-bold text-white group-hover:text-accent-yellow transition-colors">
+                                                    <h5 className="font-bold dark:text-white text-gray-900 group-hover:text-accent-yellow transition-colors">
                                                         {resource.title}
                                                     </h5>
                                                 </div>
@@ -129,11 +129,11 @@ export function MilestoneCard({
                                                     <span className="capitalize">{resource.type}</span>
                                                     <span>⏱️ {resource.duration}</span>
                                                     {resource.isFree && (
-                                                        <span className="text-accent-mint font-bold">FREE</span>
+                                                        <span className="text-accent-yellow font-bold">FREE</span>
                                                     )}
                                                 </div>
                                             </div>
-                                            <div className="text-accent-yellow text-xl group-hover:translate-x-1 transition-transform">
+                                            <div className="dark:text-accent-yellow text-accent-yellow text-xl group-hover:translate-x-1 transition-transform">
                                                 →
                                             </div>
                                         </div>

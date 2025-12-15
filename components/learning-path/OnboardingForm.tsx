@@ -91,7 +91,7 @@ export function OnboardingForm({ onComplete, isLoading }: OnboardingFormProps) {
             {/* Progress Bar */}
             <div className="mb-8">
                 <div className="flex justify-between items-center mb-2">
-                    <span className="text-sm font-bold text-white">Step {step} of {totalSteps}</span>
+                    <span className="text-sm font-bold text-gray-900 dark:text-white">Step {step} of {totalSteps}</span>
                     <span className="text-sm font-bold text-accent-yellow">{Math.round((step / totalSteps) * 100)}%</span>
                 </div>
                 <div className="h-3 bg-gray-800 border-2 border-white shadow-[4px_4px_0px_0px_#FFD300]">
@@ -107,22 +107,22 @@ export function OnboardingForm({ onComplete, isLoading }: OnboardingFormProps) {
                 {/* Step 1: Skill Level */}
                 {step === 1 && (
                     <div className="animate-[fade-in-up_0.5s_ease-out]">
-                        <h2 className="text-3xl font-black text-white mb-3">What's your current level?</h2>
-                        <p className="text-gray-400 mb-6">This helps us tailor the roadmap to your experience.</p>
+                        <h2 className="text-3xl font-black text-gray-900 dark:text-white mb-3">What's your current level?</h2>
+                        <p className="text-gray-700 dark:text-gray-400 mb-6">This helps us tailor the roadmap to your experience.</p>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                             {SKILL_LEVELS.map((level) => (
                                 <button
                                     key={level.value}
                                     onClick={() => setProfile({ ...profile, skillLevel: level.value })}
-                                    className={`p-6 border-4 transition-all transform hover:-translate-y-1 ${profile.skillLevel === level.value
+                                    className={`p-6 border-3 transition-all transform hover:-translate-y-1 ${profile.skillLevel === level.value
                                         ? 'border-accent-yellow bg-accent-yellow/10 shadow-[4px_4px_0px_0px_#FFD300]'
-                                        : 'border-gray-700 hover:border-accent-mint'
+                                        : 'border-gray-700 hover:border-accent-yellow'
                                         }`}
                                 >
                                     <div className="text-4xl mb-2">{level.emoji}</div>
-                                    <div className="font-black text-white text-lg">{level.label}</div>
-                                    <div className="text-sm text-gray-400">{level.desc}</div>
+                                    <div className="font-black dark:text-white text-gray-900 text-lg">{level.label}</div>
+                                    <div className="text-sm dark:text-gray-400 text-gray-700">{level.desc}</div>
                                 </button>
                             ))}
                         </div>
@@ -132,8 +132,8 @@ export function OnboardingForm({ onComplete, isLoading }: OnboardingFormProps) {
                 {/* Step 2: Target Role */}
                 {step === 2 && (
                     <div className="animate-[fade-in-up_0.5s_ease-out]">
-                        <h2 className="text-3xl font-black text-white mb-3">What's your goal?</h2>
-                        <p className="text-gray-400 mb-6">Choose the role you're aiming for.</p>
+                        <h2 className="text-3xl font-black text-gray-900 dark:text-white mb-3">What's your goal?</h2>
+                        <p className="text-gray-700 dark:text-gray-400 mb-6">Choose the role you're aiming for.</p>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                             {TARGET_ROLES.map((role) => (
@@ -142,7 +142,7 @@ export function OnboardingForm({ onComplete, isLoading }: OnboardingFormProps) {
                                     onClick={() => setProfile({ ...profile, targetRole: role })}
                                     className={`p-4 border-3 text-left font-bold transition-all ${profile.targetRole === role
                                         ? 'border-accent-yellow bg-accent-yellow/10 text-accent-yellow'
-                                        : 'border-gray-700 text-white hover:border-accent-mint hover:text-accent-mint'
+                                        : 'border-gray-700 text-gray-900 dark:text-white hover:border-accent-yellow hover:text-accent-yellow'
                                         }`}
                                 >
                                     {role}
@@ -151,13 +151,13 @@ export function OnboardingForm({ onComplete, isLoading }: OnboardingFormProps) {
                         </div>
 
                         <div className="mt-4">
-                            <label className="block text-sm font-bold text-white mb-2">Or enter custom role:</label>
+                            <label className="block text-sm font-bold text-gray-900 dark:text-white mb-2">Or enter custom role:</label>
                             <input
                                 type="text"
                                 placeholder="e.g., Blockchain Developer"
                                 value={!TARGET_ROLES.includes(profile.targetRole || '') ? (profile.targetRole || '') : ''}
                                 onChange={(e) => setProfile({ ...profile, targetRole: e.target.value })}
-                                className="w-full px-4 py-3 bg-background border-3 border-gray-700 text-white focus:border-accent-yellow focus:outline-none font-medium"
+                                className="w-full px-4 py-3 bg-background border-3 border-gray-700 text-gray-900 dark:text-white focus:border-accent-yellow focus:outline-none font-medium"
                             />
                         </div>
                     </div>
@@ -166,15 +166,15 @@ export function OnboardingForm({ onComplete, isLoading }: OnboardingFormProps) {
                 {/* Step 3: Time Commitment */}
                 {step === 3 && (
                     <div className="animate-[fade-in-up_0.5s_ease-out]">
-                        <h2 className="text-3xl font-black text-white mb-3">How much time can you commit?</h2>
-                        <p className="text-gray-400 mb-6">Hours per week you can dedicate to learning.</p>
+                        <h2 className="text-3xl font-black text-gray-900 dark:text-white mb-3">How much time can you commit?</h2>
+                        <p className="text-gray-700 dark:text-gray-400 mb-6">Hours per week you can dedicate to learning.</p>
 
                         <div className="max-w-md mx-auto">
                             <div className="text-center mb-6">
                                 <div className="text-7xl font-black text-accent-yellow mb-2">
-                                    {profile.hoursPerWeek || 0}
+                                    {profile.hoursPerWeek || "-"}
                                 </div>
-                                <div className="text-xl text-white font-bold">hours per week</div>
+                                <div className="text-xl text-gray-900 dark:text-white font-bold">hours per week</div>
                             </div>
 
                             <input
@@ -192,9 +192,9 @@ export function OnboardingForm({ onComplete, isLoading }: OnboardingFormProps) {
                                 <span>40h</span>
                             </div>
 
-                            <div className="mt-8 p-4 bg-background border-2 border-accent-mint">
+                            <div className="mt-8 p-4 bg-background border-2 border-accent-yellow">
                                 <div className="text-sm text-gray-400">
-                                    💡 <span className="font-bold text-accent-mint">Pro tip:</span> {
+                                    💡 <span className="font-bold text-accent-yellow">Pro tip:</span> {
                                         (profile.hoursPerWeek || 0) < 5 ? 'Even a few hours weekly builds momentum!' :
                                             (profile.hoursPerWeek || 0) < 15 ? 'Great commitment! You\'ll see steady progress.' :
                                                 'Intense pace! You\'ll advance quickly.'
@@ -208,8 +208,12 @@ export function OnboardingForm({ onComplete, isLoading }: OnboardingFormProps) {
                 {/* Step 4: Current Skills */}
                 {step === 4 && (
                     <div className="animate-[fade-in-up_0.5s_ease-out]">
-                        <h2 className="text-3xl font-black text-white mb-3">What do you already know?</h2>
-                        <p className="text-gray-400 mb-6">Select all technologies you're familiar with.</p>
+                        <h2 className="text-3xl font-black text-gray-900 dark:text-white mb-3">What do you already know?</h2>
+                        <p className="text-gray-700 dark:text-gray-400 mb-6">Select all technologies you're familiar with.</p>
+
+                        <div className="text-sm text-gray-400 text-center mb-4">
+                            Selected: <span className="font-bold text-accent-yellow">{(profile.currentSkills || []).length}</span> skills
+                        </div>
 
                         <div className="flex flex-wrap gap-2 mb-4">
                             {COMMON_SKILLS.map((skill) => (
@@ -218,7 +222,7 @@ export function OnboardingForm({ onComplete, isLoading }: OnboardingFormProps) {
                                     onClick={() => toggleSkill(skill)}
                                     className={`px-4 py-2 border-2 font-bold text-sm transition-all ${(profile.currentSkills || []).includes(skill)
                                         ? 'border-accent-yellow bg-accent-yellow text-background'
-                                        : 'border-gray-700 text-white hover:border-accent-mint'
+                                        : 'border-gray-700 dark:border-gray-400 text-gray-900 dark:text-white hover:border-accent-yellow hover:text-accent-yellow'
                                         }`}
                                 >
                                     {skill}
@@ -226,17 +230,15 @@ export function OnboardingForm({ onComplete, isLoading }: OnboardingFormProps) {
                             ))}
                         </div>
 
-                        <div className="text-sm text-gray-400 text-center">
-                            Selected: <span className="font-bold text-accent-yellow">{(profile.currentSkills || []).length}</span> skills
-                        </div>
+
                     </div>
                 )}
 
                 {/* Step 5: Learning Style */}
                 {step === 5 && (
                     <div className="animate-[fade-in-up_0.5s_ease-out]">
-                        <h2 className="text-3xl font-black text-white mb-3">How do you learn best?</h2>
-                        <p className="text-gray-400 mb-6">We'll customize resources to match your style.</p>
+                        <h2 className="text-3xl font-black text-gray-900 dark:text-white mb-3">How do you learn best?</h2>
+                        <p className="text-gray-700 dark:text-gray-400 mb-6">We'll customize resources to match your style.</p>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {LEARNING_STYLES.map((style) => (
@@ -245,12 +247,12 @@ export function OnboardingForm({ onComplete, isLoading }: OnboardingFormProps) {
                                     onClick={() => setProfile({ ...profile, learningStyle: style.value })}
                                     className={`p-6 border-4 transition-all ${profile.learningStyle === style.value
                                         ? 'border-accent-yellow bg-accent-yellow/10 shadow-[4px_4px_0px_0px_#FFD300]'
-                                        : 'border-gray-700 hover:border-accent-mint'
+                                        : 'border-gray-700 dark:border-gray-400 text-gray-900 dark:text-white hover:border-accent-yellow hover:text-accent-yellow'
                                         }`}
                                 >
                                     <div className="text-5xl mb-3">{style.emoji}</div>
-                                    <div className="font-black text-white text-xl mb-1">{style.label}</div>
-                                    <div className="text-sm text-gray-400">{style.desc}</div>
+                                    <div className="font-black text-gray-900 dark:text-white text-xl mb-1">{style.label}</div>
+                                    <div className="text-sm text-gray-400 dark:text-gray-400">{style.desc}</div>
                                 </button>
                             ))}
                         </div>
