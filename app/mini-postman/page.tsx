@@ -84,7 +84,7 @@ export default function ApiClientPage() {
     // Helper to manage headers based on method
     const handleMethodChange = (newMethod: string) => {
         setMethod(newMethod);
-        
+
         // Auto-manage Content-Type header based on method
         if (["POST", "PUT", "PATCH"].includes(newMethod)) {
             // Add Content-Type if not present for methods that typically need it
@@ -160,7 +160,7 @@ export default function ApiClientPage() {
             try {
                 const json = JSON.parse(text);
                 data = JSON.stringify(json, null, 2);
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
             } catch (e) {
                 // Not JSON, keep as text
             }
@@ -179,7 +179,7 @@ export default function ApiClientPage() {
                 headers: resHeaders,
             });
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (err: any) {
             const errorMessage = err.message || "Something went wrong";
             let errorState: ErrorState;
@@ -247,7 +247,7 @@ export default function ApiClientPage() {
                             <h1 className="text-2xl font-bold text-accent-yellow dark:text-white mb-2">Mini Postman</h1>
                             <p className="text-sm text-gray-600 dark:text-gray-400">Test and debug your API endpoints with ease</p>
                         </div>
-                        
+
                         <div className="flex flex-col sm:flex-row gap-3">
                             <div className="relative">
                                 <select
@@ -255,11 +255,11 @@ export default function ApiClientPage() {
                                     onChange={(e) => handleMethodChange(e.target.value)}
                                     className="appearance-none bg-white dark:bg-[#1D233D] border-2 border-[#10162F] dark:border-gray-600 rounded-lg px-4 py-3 pr-10 text-sm font-bold text-[#10162F] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#3A10E5] shadow-lg hover:shadow-xl transition-all cursor-pointer min-w-[120px]"
                                 >
-                            <option value="GET">GET</option>
-                            <option value="POST">POST</option>
-                            <option value="PUT">PUT</option>
-                            <option value="PATCH">PATCH</option>
-                            <option value="DELETE">DELETE</option>
+                                    <option value="GET">GET</option>
+                                    <option value="POST">POST</option>
+                                    <option value="PUT">PUT</option>
+                                    <option value="PATCH">PATCH</option>
+                                    <option value="DELETE">DELETE</option>
                                 </select>
                                 <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-[#10162F] dark:text-white">
                                     <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg>
@@ -310,24 +310,24 @@ export default function ApiClientPage() {
                             </div>
 
                             <div className="h-96 overflow-y-auto bg-white dark:bg-[#1D233D]">
-                        {activeTab === "params" && (
-                            <ParamsEditor
-                                title="Query Params"
-                                items={params}
-                                onAdd={() => addPair(setParams)}
-                                onUpdate={(id, field, val) => updatePair(setParams, id, field, val)}
-                                onRemove={(id) => removePair(setParams, id)}
-                            />
-                        )}
-                        {activeTab === "headers" && (
-                            <ParamsEditor
-                                title="Headers"
-                                items={headers}
-                                onAdd={() => addPair(setHeaders)}
-                                onUpdate={(id, field, val) => updatePair(setHeaders, id, field, val)}
-                                onRemove={(id) => removePair(setHeaders, id)}
-                            />
-                        )}
+                                {activeTab === "params" && (
+                                    <ParamsEditor
+                                        title="Query Params"
+                                        items={params}
+                                        onAdd={() => addPair(setParams)}
+                                        onUpdate={(id, field, val) => updatePair(setParams, id, field, val)}
+                                        onRemove={(id) => removePair(setParams, id)}
+                                    />
+                                )}
+                                {activeTab === "headers" && (
+                                    <ParamsEditor
+                                        title="Headers"
+                                        items={headers}
+                                        onAdd={() => addPair(setHeaders)}
+                                        onUpdate={(id, field, val) => updatePair(setHeaders, id, field, val)}
+                                        onRemove={(id) => removePair(setHeaders, id)}
+                                    />
+                                )}
                                 {activeTab === "body" && (
                                     <div className="h-full flex flex-col">
                                         <CodeMirror
@@ -381,31 +381,31 @@ export default function ApiClientPage() {
                                 </>
                             ) : (
                                 <div className="h-96 flex flex-col items-center justify-center text-[#10162F] dark:text-gray-400 p-8 text-center">
-                                {isLoading ? (
-                                    <div className="flex flex-col items-center gap-6">
-                                        <div className="relative">
-                                            <div className="w-16 h-16 border-4 border-[#3A10E5] dark:border-[#FFD300] border-t-transparent rounded-full animate-spin"></div>
-                                            <div className="absolute inset-0 w-16 h-16 border-4 border-transparent border-b-[#3A10E5]/30 dark:border-b-[#FFD300]/30 rounded-full animate-spin" style={{ animationDirection: 'reverse', animationDuration: '1.5s' }}></div>
+                                    {isLoading ? (
+                                        <div className="flex flex-col items-center gap-6">
+                                            <div className="relative">
+                                                <div className="w-16 h-16 border-4 border-[#3A10E5] dark:border-[#FFD300] border-t-transparent rounded-full animate-spin"></div>
+                                                <div className="absolute inset-0 w-16 h-16 border-4 border-transparent border-b-[#3A10E5]/30 dark:border-b-[#FFD300]/30 rounded-full animate-spin" style={{ animationDirection: 'reverse', animationDuration: '1.5s' }}></div>
+                                            </div>
+                                            <div className="text-center">
+                                                <p className="font-bold text-lg tracking-wide text-[#3A10E5] dark:text-[#FFD300]">SENDING REQUEST</p>
+                                                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Please wait...</p>
+                                            </div>
                                         </div>
-                                        <div className="text-center">
-                                            <p className="font-bold text-lg tracking-wide text-[#3A10E5] dark:text-[#FFD300]">SENDING REQUEST</p>
-                                            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Please wait...</p>
+                                    ) : error ? (
+                                        <ErrorDisplay error={error} onRetry={handleSend} />
+                                    ) : (
+                                        <div className="flex flex-col items-center gap-6 opacity-60">
+                                            <div className="w-24 h-24 bg-gradient-to-br from-[#FFF0E5] to-[#FFE4CC] dark:from-[#1D233D] dark:to-[#243055] border-2 border-[#10162F] dark:border-gray-600 rounded-xl flex items-center justify-center shadow-lg">
+                                                <Globe size={40} className="text-[#3A10E5] dark:text-[#FFD300]" />
+                                            </div>
+                                            <div className="text-center">
+                                                <p className="font-bold text-lg mb-2">Ready to Send Request</p>
+                                                <p className="text-sm text-gray-500 dark:text-gray-400">Configure your request and click Send</p>
+                                            </div>
                                         </div>
-                                    </div>
-                                ) : error ? (
-                                    <ErrorDisplay error={error} onRetry={handleSend} />
-                                ) : (
-                                    <div className="flex flex-col items-center gap-6 opacity-60">
-                                        <div className="w-24 h-24 bg-gradient-to-br from-[#FFF0E5] to-[#FFE4CC] dark:from-[#1D233D] dark:to-[#243055] border-2 border-[#10162F] dark:border-gray-600 rounded-xl flex items-center justify-center shadow-lg">
-                                            <Globe size={40} className="text-[#3A10E5] dark:text-[#FFD300]" />
-                                        </div>
-                                        <div className="text-center">
-                                            <p className="font-bold text-lg mb-2">Ready to Send Request</p>
-                                            <p className="text-sm text-gray-500 dark:text-gray-400">Configure your request and click Send</p>
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
+                                    )}
+                                </div>
                             )}
                         </div>
                     </div>

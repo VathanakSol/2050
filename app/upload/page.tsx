@@ -370,7 +370,7 @@ function UploadFeature() {
     }
 
     return () => observer.disconnect();
-  }, [displayedCount, filteredImages.length, isLoadingMore]);
+  }, [displayedCount, filteredImages.length, isLoadingMore, loadMoreImages]);
 
   // Reset displayed count when filters change
   useEffect(() => {
@@ -382,7 +382,7 @@ function UploadFeature() {
   const progressPercentage = Math.min((images.length / TARGET_IMAGES) * 100, 100);
 
   return (
-    <div className="min-h-screen p-4 md:p-8">
+    <div className="min-h-screen p-4 md:p-8 bg-background text-foreground">
       <div
         className={`max-w-7xl mx-auto mb-8 transition-all duration-300 ${previewImage ? "lg:mr-[420px]" : ""
           }`}
@@ -394,7 +394,7 @@ function UploadFeature() {
               <h1 className="text-2xl md:text-3xl font-bold text-accent-yellow mb-2">
                 Stock Image
               </h1>
-              <p className="text-gray-400 text-sm md:text-base">
+              <p className="text-foreground/70 text-sm md:text-base">
                 Free stock photos and share your image{" "}
                 <span className="font-semibold text-sm md:text-base text-accent-yellow">
                   OPEN SOURCE
@@ -403,19 +403,18 @@ function UploadFeature() {
 
               {/* Progress Bar */}
               <div className="mt-3 space-y-1">
-                <div className="flex items-center justify-between text-xs text-gray-400">
+                <div className="flex items-center justify-between text-xs text-foreground/60">
                   <div className="relative group">
-                    <span className="cursor-help border-b border-dotted border-gray-500 hover:border-accent-yellow transition-colors">
+                    <span className="cursor-help border-b border-dotted border-foreground/40 hover:border-accent-yellow transition-colors">
                       Mission Complete
                     </span>
                     {/* Tooltip */}
                     {progressPercentage < 100 && (
-                      <div className="absolute bottom-full left-0 mb-2 w-180 bg-gray-900 border-2 border-accent-yellow/50 rounded-lg p-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10 shadow-xl">
+                      <div className="absolute bottom-full left-0 mb-2 w-180 bg-card-bg border-2 border-accent-yellow/50 rounded-lg p-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10 shadow-xl dark:shadow-accent-yellow/10">
                         <div className="flex items-start gap-2">
-
                           <div className="text-xs">
                             <p className="text-accent-yellow font-bold mb-1">🌟 Help Us Grow!</p>
-                            <p className="text-gray-300 leading-relaxed">
+                            <p className="text-foreground/80 leading-relaxed">
                               We need <span className="text-accent-yellow font-semibold">{(TARGET_IMAGES - images.length).toLocaleString()} more images</span> to reach {TARGET_IMAGES.toLocaleString()}!
                               Your contributions make this a rich, free resource for everyone.
                             </p>
@@ -428,7 +427,7 @@ function UploadFeature() {
                   </div>
                   <span className="font-bold text-accent-yellow">{progressPercentage.toFixed(1)}%</span>
                 </div>
-                <div className="h-2 bg-gray-700 rounded-full overflow-hidden border border-gray-600 max-w-md">
+                <div className="h-2 bg-foreground/10 dark:bg-foreground/20 rounded-full overflow-hidden border border-foreground/20 max-w-md">
                   <div
                     className={`h-full transition-all duration-500 ease-out ${progressPercentage >= 50 ? 'bg-green-500' : 'bg-accent-yellow'
                       }`}
@@ -438,19 +437,40 @@ function UploadFeature() {
               </div>
             </div>
 
-            <div className="flex items-center gap-2 w-full md:w-auto justify-center md:justify-end">
+            <div className="flex items-center gap-3 w-full md:w-auto justify-center md:justify-end">
               <Link
                 href="/manage-images"
-                className="flex-1 sm:flex-none justify-center bg-[#FFD300] text-[#10162F] px-3 sm:px-4 py-1.5 font-black uppercase tracking-wider border-2 border-white shadow-[4px_4px_0px_0px_#FFFFFF] hover:translate-y-1 hover:shadow-none active:translate-y-1 active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed transition-all whitespace-nowrap flex items-center gap-2 text-xs sm:text-sm"
+                className="group relative flex-1 sm:flex-none justify-center bg-gradient-to-br from-[#FFD300] to-[#FFC700] text-[#10162F] px-4 sm:px-6 py-2.5 font-black uppercase tracking-wider border-2 border-white shadow-[6px_6px_0px_0px_rgba(255,255,255,0.9)] hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.7)] active:translate-y-1 active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 whitespace-nowrap flex items-center gap-2 text-sm overflow-hidden"
               >
-                Manage
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+                <svg
+                  className="w-4 h-4 relative z-10"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
+                </svg>
+                <span className="relative z-10">Manage</span>
               </Link>
               <button
                 onClick={() => setShowUploadModal(true)}
-                className="flex-1 sm:flex-none justify-center bg-[#FFD300] text-[#10162F] px-3 sm:px-4 py-1.5 font-black uppercase tracking-wider border-2 border-white shadow-[4px_4px_0px_0px_#FFFFFF] hover:translate-y-1 hover:shadow-none active:translate-y-1 active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed transition-all whitespace-nowrap flex items-center gap-2 text-xs sm:text-sm"
+                className="group relative flex-1 sm:flex-none justify-center bg-gradient-to-br from-[#FFD300] to-[#FFC700] text-[#10162F] px-4 sm:px-6 py-2.5 font-black uppercase tracking-wider border-2 border-white shadow-[6px_6px_0px_0px_rgba(255,255,255,0.9)] hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.7)] active:translate-y-1 active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 whitespace-nowrap flex items-center gap-2 text-sm overflow-hidden"
               >
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
                 <svg
-                  className="w-4 h-4"
+                  className="w-4 h-4 relative z-10"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -462,12 +482,12 @@ function UploadFeature() {
                     d="M12 4v16m8-8H4"
                   />
                 </svg>
-                Upload
+                <span className="relative z-10">Upload</span>
               </button>
             </div>
           </div>
 
-          <hr className="my-2 border-gray-800" />
+          <hr className="my-2 border-foreground/20" />
 
           {/* Search Bar */}
           <div className="relative max-w-xl mx-auto w-full">
@@ -476,10 +496,10 @@ function UploadFeature() {
               placeholder="Search images..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-card-bg border-2 border-gray-700 rounded-lg px-4 py-2.5 pl-10 text-white focus:border-accent-yellow focus:outline-none transition-colors"
+              className="w-full bg-card-bg border-2 border-foreground/20 rounded-lg px-4 py-2.5 pl-10 text-foreground placeholder:text-foreground/50 focus:border-accent-yellow focus:outline-none transition-colors"
             />
             <svg
-              className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
+              className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-foreground/50"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -497,10 +517,10 @@ function UploadFeature() {
           <div className="flex items-center gap-2">
             <button
               onClick={() => scrollCategories('left')}
-              className="flex-shrink-0 p-2 rounded-lg hover:border-accent-yellow/50 hover:text-accent-yellow text-gray-400 transition-all"
+              className="flex-shrink-0 p-2 rounded-lg hover:bg-accent-yellow/10 hover:text-accent-yellow text-foreground/60 transition-all"
               aria-label="Scroll left"
             >
-              <svg className="w-5 h-5 text-accent-yellow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
             </button>
@@ -511,14 +531,14 @@ function UploadFeature() {
                 className="flex items-center gap-2 overflow-x-auto scrollbar-hide scroll-smooth"
                 style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
               >
-                <span className="text-sm text-gray-400 font-semibold flex-shrink-0">Categories:</span>
+                <span className="text-sm text-foreground/60 font-semibold flex-shrink-0">Categories:</span>
                 {categories.map((category) => (
                   <button
                     key={category}
                     onClick={() => setSelectedCategory(category)}
                     className={`px-3 py-1.5 rounded-lg font-semibold text-xs transition-all flex-shrink-0 ${selectedCategory === category
-                      ? 'bg-accent-yellow text-[#10162F] shadow-md'
-                      : 'bg-card-bg border border-gray-700 text-gray-300 hover:border-accent-yellow/50 hover:text-accent-yellow'
+                      ? 'bg-accent-yellow text-background shadow-md'
+                      : 'bg-card-bg border border-foreground/20 text-foreground/70 hover:border-accent-yellow/50 hover:text-accent-yellow hover:bg-accent-yellow/5'
                       }`}
                   >
                     {category}
@@ -529,10 +549,10 @@ function UploadFeature() {
 
             <button
               onClick={() => scrollCategories('right')}
-              className="flex-shrink-0 p-2 rounded-lg hover:border-accent-yellow/50 hover:text-accent-yellow text-gray-400 transition-all"
+              className="flex-shrink-0 p-2 rounded-lg hover:bg-accent-yellow/10 hover:text-accent-yellow text-foreground/60 transition-all"
               aria-label="Scroll right"
             >
-              <svg className="w-5 h-5 text-accent-yellow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
             </button>
@@ -552,10 +572,10 @@ function UploadFeature() {
               return (
                 <div
                   key={i}
-                  className="break-inside-avoid bg-card-bg rounded-xl overflow-hidden animate-pulse"
+                  className="break-inside-avoid bg-card-bg rounded-xl overflow-hidden animate-pulse border border-foreground/5"
                   style={{ height: `${height}px` }}
                 >
-                  <div className="w-full h-full bg-gray-700" />
+                  <div className="w-full h-full bg-foreground/10" />
                 </div>
               );
             })}
@@ -570,7 +590,7 @@ function UploadFeature() {
             {filteredImages.slice(0, displayedCount).map((image, index) => (
               <div
                 key={image.key}
-                className="break-inside-avoid group relative bg-card-bg rounded-lg overflow-hidden hover:scale-[1.02] transition-all duration-300 cursor-pointer shadow-md hover:shadow-accent-yellow/2"
+                className="break-inside-avoid group relative bg-card-bg rounded-lg overflow-hidden hover:scale-[1.02] transition-all duration-300 cursor-pointer shadow-md hover:shadow-lg dark:hover:shadow-accent-yellow/10 border border-foreground/5 hover:border-accent-yellow/20"
               >
                 <Image
                   width={800}
@@ -586,7 +606,7 @@ function UploadFeature() {
                   Free
                 </div>
 
-                <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 flex items-end p-3 pointer-events-auto">
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 flex items-end p-3 pointer-events-auto">
                   <div className="w-full">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-1.5">
@@ -595,7 +615,7 @@ function UploadFeature() {
                             e.stopPropagation();
                             handleDownload(image, index);
                           }}
-                          className="bg-accent-yellow/20 backdrop-blur-sm text-accent-yellow px-3 py-2 rounded-md text-sm font-bold hover:bg-accent-yellow/30 transition-colors flex items-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-yellow/30 active:scale-95"
+                          className="bg-accent-yellow/20 backdrop-blur-sm text-accent-yellow px-3 py-2 rounded-md text-sm font-bold hover:bg-accent-yellow/30 transition-colors flex items-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-yellow/30 active:scale-95 border border-accent-yellow/30"
                         >
                           <svg
                             className="w-3 h-3"
@@ -619,7 +639,7 @@ function UploadFeature() {
                             setPreviewImage(image);
                             setPreviewIndex(index);
                           }}
-                          className="bg-accent-mint/20 backdrop-blur-sm text-accent-mint px-3 py-2 rounded-md text-sm font-bold hover:bg-accent-mint/30 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-mint/30 active:scale-95"
+                          className="bg-accent-mint/20 backdrop-blur-sm text-accent-mint px-3 py-2 rounded-md text-sm font-bold hover:bg-accent-mint/30 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-mint/30 active:scale-95 border border-accent-mint/30"
                         >
                           View
                         </button>
@@ -640,10 +660,10 @@ function UploadFeature() {
                 return (
                   <div
                     key={`skeleton-${i}`}
-                    className="break-inside-avoid bg-card-bg rounded-lg overflow-hidden animate-pulse"
+                    className="break-inside-avoid bg-card-bg rounded-lg overflow-hidden animate-pulse border border-foreground/5"
                     style={{ height: `${height}px` }}
                   >
-                    <div className="w-full h-full bg-gray-700" />
+                    <div className="w-full h-full bg-foreground/10" />
                   </div>
                 );
               })}
@@ -657,8 +677,8 @@ function UploadFeature() {
 
           {/* End Message */}
           {displayedCount >= filteredImages.length && filteredImages.length > 0 && (
-            <div className="text-center py-8 text-gray-400">
-              <p className="text-sm">You've reached the end! 🎉</p>
+            <div className="text-center py-8 text-foreground/60">
+              <p className="text-sm">You&apos;ve reached the end! 🎉</p>
             </div>
           )}
         </div>
@@ -668,12 +688,12 @@ function UploadFeature() {
         <div className="fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-[fade-in_0.2s_ease-out]">
           <div className="bg-card-bg rounded-2xl max-w-xl w-full max-h-[85vh] overflow-y-auto border-2 border-accent-yellow/20 shadow-2xl shadow-accent-yellow/10 animate-[fade-in-up_0.3s_ease-out]">
             {/* Header with accent border */}
-            <div className="sticky top-0 bg-linear-to-r from-card-bg to-card-bg border-b-2 border-accent-yellow/30 p-5 flex items-center justify-between z-10">
+            <div className="sticky top-0 bg-gradient-to-r from-card-bg to-card-bg border-b-2 border-accent-yellow/30 p-5 flex items-center justify-between z-10">
               <div>
                 <h2 className="text-2xl font-bold text-accent-yellow mb-1">
                   Upload Public Image
                 </h2>
-                <p className="text-gray-400 text-sm">
+                <p className="text-foreground/70 text-sm">
                   Share your images with the community
                 </p>
               </div>
@@ -682,7 +702,7 @@ function UploadFeature() {
                   setShowUploadModal(false);
                   handleReset();
                 }}
-                className="text-gray-400 hover:text-accent-yellow hover:bg-accent-yellow/10 p-2 rounded-lg transition-all duration-200"
+                className="text-foreground/60 hover:text-accent-yellow hover:bg-accent-yellow/10 p-2 rounded-lg transition-all duration-200"
               >
                 <svg
                   className="w-6 h-6"
@@ -702,21 +722,21 @@ function UploadFeature() {
 
             <form onSubmit={uploadImage} className="p-5">
               {/* Warning Message */}
-              <div className="mb-5 bg-[#FFD300] text-[#10162F] px-4 sm:px-6 py-3 sm:py-2 font-black uppercase tracking-wider border-2 border-white shadow-[4px_4px_0px_0px_#FFFFFF] hover:translate-y-1 hover:shadow-none active:translate-y-1 active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed transition-all whitespace-normal sm:whitespace-nowrap flex items-center gap-2 rounded-lg animate-[fade-in_0.3s_ease-out]">
+              <div className="mb-5 bg-accent-yellow text-background px-4 sm:px-6 py-3 sm:py-2 font-black uppercase tracking-wider border-2 border-foreground/20 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] hover:translate-y-1 hover:shadow-none active:translate-y-1 active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed transition-all whitespace-normal sm:whitespace-nowrap flex items-center gap-2 rounded-lg animate-[fade-in_0.3s_ease-out]">
                 <div className="flex flex-col sm:flex-row items-start gap-2 sm:gap-3 w-full">
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-[#10162F] font-bold text-xs sm:text-sm mb-1 leading-tight break-words">
+                    <h3 className="text-background font-bold text-xs sm:text-sm mb-1 leading-tight break-words">
                       ↘️ Public Upload Warning
                     </h3>
-                    <p className="text-[#10162F]/90 text-xs leading-relaxed break-words">
+                    <p className="text-background/90 text-xs leading-relaxed break-words">
                       <strong>
                         Do not upload{" "}
-                        <span className="bg-white px-1 sm:px-2 py-0.5 inline-block text-xs sm:text-sm break-words">
+                        <span className="bg-background/20 px-1 sm:px-2 py-0.5 inline-block text-xs sm:text-sm break-words rounded">
                           sensitive or private data!
                         </span>
                       </strong>
                     </p>
-                    <p className="text-[#10162F]/90 text-xs leading-relaxed mt-1 break-words">
+                    <p className="text-background/90 text-xs leading-relaxed mt-1 break-words">
                       All images uploaded here are{" "}
                       <strong>publicly accessible</strong> to anyone.
                     </p>
@@ -735,7 +755,7 @@ function UploadFeature() {
                                     transition-all duration-300 ease-out
                                     ${isDragging
                     ? "border-accent-mint bg-accent-mint/10 scale-[1.02] shadow-lg shadow-accent-mint/20"
-                    : "border-gray-600 hover:border-accent-yellow hover:bg-accent-yellow/5 hover:shadow-lg"
+                    : "border-foreground/30 hover:border-accent-yellow hover:bg-accent-yellow/5 hover:shadow-lg"
                   }
                                 `}
               >
@@ -753,7 +773,7 @@ function UploadFeature() {
                     {/* Icon with glow effect */}
                     <div className="flex justify-center">
                       <div
-                        className={`p-3 rounded-xl ${isDragging ? "bg-accent-mint/20" : "bg-gray-700/50"
+                        className={`p-3 rounded-xl ${isDragging ? "bg-accent-mint/20" : "bg-foreground/10"
                           } transition-all duration-300`}
                       >
                         <svg
@@ -776,13 +796,13 @@ function UploadFeature() {
                     </div>
 
                     <div>
-                      <p className="text-xl font-bold text-white mb-2">
+                      <p className="text-xl font-bold text-foreground mb-2">
                         {isDragging ? "Drop your image here!" : "Drag & Drop"}
                       </p>
-                      <p className="text-gray-400 text-sm mb-3">
+                      <p className="text-foreground/60 text-sm mb-3">
                         or click to browse your images
                       </p>
-                      <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
+                      <div className="flex items-center justify-center gap-2 text-sm text-foreground/50">
                         <svg
                           className="w-4 h-4"
                           fill="currentColor"
@@ -799,7 +819,7 @@ function UploadFeature() {
                     </div>
 
                     <div className="pt-2">
-                      <button className="bg-[#FFD300] text-[#10162F] px-8 py-4 font-black uppercase tracking-wider border-2 border-white shadow-[4px_4px_0px_0px_#FFFFFF] hover:translate-y-1 hover:shadow-none active:translate-y-1 active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed transition-all whitespace-nowrap">
+                      <button className="bg-accent-yellow text-background px-8 py-4 font-black uppercase tracking-wider border-2 border-foreground/20 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] hover:translate-y-1 hover:shadow-none active:translate-y-1 active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed transition-all whitespace-nowrap">
                         Browse Files
                       </button>
                     </div>
@@ -841,7 +861,7 @@ function UploadFeature() {
                     </div>
 
                     {/* File info card */}
-                    <div className="text-left bg-linear-to-br from-background/80 to-background/50 rounded-lg p-4 border border-accent-yellow/20">
+                    <div className="text-left bg-gradient-to-br from-card-bg/80 to-card-bg/50 rounded-lg p-4 border border-accent-yellow/20">
                       <div className="flex items-start gap-3">
                         <div className="p-2 bg-accent-yellow/20 rounded-lg">
                           <svg
@@ -860,10 +880,10 @@ function UploadFeature() {
                           <p className="text-xs text-accent-yellow font-semibold mb-1">
                             READY TO UPLOAD
                           </p>
-                          <p className="text-white font-bold truncate text-base max-w-[300px]">
+                          <p className="text-foreground font-bold truncate text-base max-w-[300px]">
                             {selectedFile?.name}
                           </p>
-                          <p className="text-sm text-gray-400 mt-1">
+                          <p className="text-sm text-foreground/60 mt-1">
                             {selectedFile &&
                               `${(selectedFile.size / 1024).toFixed(2)} KB`}
                           </p>
@@ -878,14 +898,14 @@ function UploadFeature() {
               {isUploading && (
                 <div className="mt-5 space-y-2 animate-[fade-in_0.3s_ease-out]">
                   <div className="flex justify-between items-center">
-                    <span className="text-gray-300 font-semibold">
+                    <span className="text-foreground/80 font-semibold">
                       Uploading your image...
                     </span>
                     <span className="text-accent-yellow font-bold text-lg">
                       {uploadProgress}%
                     </span>
                   </div>
-                  <div className="h-3 bg-gray-700 rounded-full overflow-hidden border border-gray-600">
+                  <div className="h-3 bg-foreground/10 rounded-full overflow-hidden border border-foreground/20">
                     <div
                       className="h-full bg-accent-yellow transition-all duration-300 ease-out shadow-lg"
                       style={{ width: `${uploadProgress}%` }}
@@ -1031,12 +1051,12 @@ function UploadFeature() {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-white">
+                  <h3 className="text-xl font-bold text-foreground">
                     {downloadStatus === "downloading" && "Downloading Image"}
                     {downloadStatus === "success" && "Download Complete!"}
                     {downloadStatus === "error" && "Download Failed"}
                   </h3>
-                  <p className="text-sm text-gray-400">
+                  <p className="text-sm text-foreground/60">
                     {downloadStatus === "downloading" && "Please wait..."}
                     {downloadStatus === "success" && "Image saved successfully"}
                     {downloadStatus === "error" && "Something went wrong"}
@@ -1049,8 +1069,8 @@ function UploadFeature() {
             <div className="p-6 space-y-5">
               {/* Image Preview */}
               <div className="relative">
-                <div className="absolute -inset-1 bg-linear-to-r from-accent-yellow via-accent-mint to-accent-blue rounded-xl blur opacity-20"></div>
-                <div className="relative bg-background/50 rounded-xl p-3 border border-accent-yellow/20">
+                <div className="absolute -inset-1 bg-gradient-to-r from-accent-yellow via-accent-mint to-accent-blue rounded-xl blur opacity-20"></div>
+                <div className="relative bg-card-bg/50 rounded-xl p-3 border border-accent-yellow/20">
                   <Image
                     width={400}
                     height={300}
@@ -1066,20 +1086,20 @@ function UploadFeature() {
               {downloadStatus === "downloading" && (
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
-                    <span className="text-gray-300 font-semibold text-sm">
+                    <span className="text-foreground/80 font-semibold text-sm">
                       Progress
                     </span>
                     <span className="text-accent-yellow font-bold text-lg">
                       {downloadProgress}%
                     </span>
                   </div>
-                  <div className="h-3 bg-gray-700 rounded-full overflow-hidden border border-gray-600">
+                  <div className="h-3 bg-foreground/10 rounded-full overflow-hidden border border-foreground/20">
                     <div
                       className="h-full bg-accent-yellow transition-all duration-300 ease-out shadow-lg"
                       style={{ width: `${downloadProgress}%` }}
                     />
                   </div>
-                  <div className="flex items-center justify-center gap-2 text-gray-400 text-sm">
+                  <div className="flex items-center justify-center gap-2 text-foreground/60 text-sm">
                     <svg
                       className="animate-spin h-4 w-4"
                       fill="none"
@@ -1187,7 +1207,7 @@ function UploadFeature() {
         {previewImage && (
           <div className="h-full flex flex-col">
             {/* Header */}
-            <div className="bg-linear-to-r from-accent-yellow/10 to-accent-mint/10 border-b-2 border-accent-yellow/30 p-4 flex items-center justify-between">
+            <div className="bg-gradient-to-r from-accent-yellow/10 to-accent-mint/10 border-b-2 border-accent-yellow/30 p-4 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-accent-mint/20 rounded-lg">
                   <svg
@@ -1211,14 +1231,14 @@ function UploadFeature() {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-white">
-                    IMAGE PREVIEWs
+                  <h3 className="text-lg font-bold text-foreground">
+                    IMAGE PREVIEW
                   </h3>
                 </div>
               </div>
               <button
                 onClick={() => setPreviewImage(null)}
-                className="text-gray-400 hover:text-accent-yellow hover:bg-accent-yellow/10 p-2 rounded-lg transition-all duration-200"
+                className="text-foreground/60 hover:text-accent-yellow hover:bg-accent-yellow/10 p-2 rounded-lg transition-all duration-200"
               >
                 <svg
                   className="w-5 h-5"
@@ -1241,7 +1261,7 @@ function UploadFeature() {
               {/* Main Image */}
               <div className="relative">
                 <div className="absolute -inset-1 bg-gradient-to-r from-accent-yellow via-accent-mint to-accent-blue rounded-xl blur opacity-20"></div>
-                <div className="relative bg-background/50 rounded-xl p-2 border border-accent-yellow/20">
+                <div className="relative bg-card-bg/50 rounded-xl p-2 border border-accent-yellow/20">
                   <Image
                     width={800}
                     height={800}
@@ -1254,23 +1274,23 @@ function UploadFeature() {
               </div>
 
               {/* Image Info */}
-              <div className="bg-background/50 rounded-lg p-4 border border-accent-yellow/20 space-y-3">
+              <div className="bg-card-bg/50 rounded-lg p-4 border border-accent-yellow/20 space-y-3">
                 <h4 className="text-accent-yellow font-bold text-sm uppercase tracking-wider">
                   Image Details
                 </h4>
 
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between items-center">
-                    <span className="text-gray-400">Status:</span>
-                    <span className="text-white px-2 py-0.5 rounded-xl font-semibold bg-accent-yellow">
+                    <span className="text-foreground/60">Status:</span>
+                    <span className="text-background px-2 py-0.5 rounded-xl font-semibold bg-accent-yellow">
                       Free
                     </span>
                   </div>
 
                   {previewImage.size && (
                     <div className="flex justify-between items-center">
-                      <span className="text-gray-400">Size:</span>
-                      <span className="text-white font-semibold">
+                      <span className="text-foreground/60">Size:</span>
+                      <span className="text-foreground font-semibold">
                         {(previewImage.size / 1024).toFixed(2)} KB
                       </span>
                     </div>
@@ -1278,8 +1298,8 @@ function UploadFeature() {
 
                   {previewImage.lastModified && (
                     <div className="flex justify-between items-center">
-                      <span className="text-gray-400">Last Modified:</span>
-                      <span className="text-white font-semibold">
+                      <span className="text-foreground/60">Last Modified:</span>
+                      <span className="text-foreground font-semibold">
                         {getRelativeTime(new Date(previewImage.lastModified))}
                       </span>
                     </div>
@@ -1370,7 +1390,7 @@ function UploadFeature() {
       {/* Overlay when preview is open */}
       {previewImage && (
         <div
-          className="fixed inset-0 bg-black/60 sm:bg-black/20 z-30 transition-opacity duration-300"
+          className="fixed inset-0 bg-black/60 dark:bg-black/60 sm:bg-black/20 sm:dark:bg-black/20 z-30 transition-opacity duration-300"
           onClick={() => setPreviewImage(null)}
         />
       )}

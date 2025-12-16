@@ -119,24 +119,26 @@ export default async function BlogPage() {
 
     return (
         <div className="mx-auto container px-4 py-8 max-w-5xl">
-            <h1 className="text-3xl font-bold mb-8 border-b pb-4">Latest News</h1>
+            <h1 className="text-3xl text-accent-yellow font-bold mb-8 border-b pb-4">Latest News</h1>
             <div className="flex flex-col gap-6">
+
+                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                 {posts.map((post: any) => (
                     <Link href={`/blog/${post.slug.current}`} key={post._id} className="group block">
-                        <div className="flex flex-col md:flex-row gap-5 items-start pb-6 border-b border-gray-100 dark:border-gray-800 last:border-0">
+                        <div className="flex flex-col border-2 border-red-500 md:flex-row gap-5 items-start pb-2 border-b border-gray-100 dark:border-gray-800 last:border-0">
                             {post.mainImage && (
                                 <div className="relative w-full md:w-[200px] h-[130px] flex-shrink-0 rounded-lg overflow-hidden bg-gray-100">
                                     <Image
                                         src={urlFor(post.mainImage).url()}
                                         alt={post.title}
                                         fill
-                                        className="object-cover transition-transform duration-300"
+                                        className="object-cover transition-transform border-2 rounded-lg duration-300"
                                     />
                                 </div>
                             )}
                             <div className="flex-1 flex flex-col pt-1">
                                 <div className="flex items-center gap-2 mb-1">
-                                    <span className=" text-gray-400 text-xs">
+                                    <span className="bg-accent-yellow px-2 text-white py-1 text-xs">
                                         {post.category.toUpperCase()}
                                     </span>
                                 </div>

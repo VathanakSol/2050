@@ -72,14 +72,14 @@ export function ChatInput({ onSend, disabled, showFileUpload = false }: ChatInpu
             )}
 
             <div className="relative">
-                <div className="relative flex items-end gap-2 bg-white border-2 border-black p-2 shadow-[4px_4px_0px_0px_#10162F]">
+                <div className="relative flex items-end gap-2 bg-background border-2 border-foreground p-2 shadow-[4px_4px_0px_0px_var(--color-card-bg)]">
                     {showFileUpload && (
                         <button
                             type="button"
                             onClick={() => setShowUploader(!showUploader)}
                             className={`p-2 transition-colors ${showUploader || uploadedFile
-                                    ? 'bg-accent-yellow text-black'
-                                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                                    ? 'bg-accent-yellow text-foreground'
+                                    : 'bg-card-bg text-foreground/70 hover:bg-foreground/10'
                                 }`}
                             title="Attach file"
                         >
@@ -94,13 +94,13 @@ export function ChatInput({ onSend, disabled, showFileUpload = false }: ChatInpu
                         onKeyDown={handleKeyDown}
                         placeholder={uploadedFile ? "Describe what you want to fix..." : "Ask something about code..."}
                         disabled={disabled}
-                        className="w-full bg-transparent border-none outline-none resize-none min-h-[44px] max-h-[200px] py-2 px-2 text-gray-900 placeholder-gray-400 font-mono text-sm"
+                        className="w-full bg-transparent border-none outline-none resize-none min-h-[44px] max-h-[200px] py-2 px-2 text-foreground placeholder-foreground/50 font-mono text-sm"
                         rows={1}
                     />
                     <button
                         type="submit"
                         disabled={disabled || !input.trim()}
-                        className="p-2 bg-[#10162F] text-white hover:bg-accent-yellow hover:text-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="p-2 bg-card-bg text-foreground hover:bg-accent-yellow hover:text-background transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
                             <path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z" />

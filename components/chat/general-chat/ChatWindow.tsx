@@ -79,13 +79,13 @@ export function ChatWindow() {
 
     if (messages.length === 0) {
         return (
-            <div className="flex flex-col flex-grow border-2 border-black shadow-[8px_8px_0px_0px_#10162F] bg-[#10162F] h-full">
+            <div className="flex flex-col flex-grow border-none border-foreground shadow-[8px_8px_0px_0px_var(--color-background)] bg-background dark:shadow-[8px_8px_0px_0px_var(--color-foreground)] h-full">
                 <div className="flex-grow flex items-center justify-center p-4">
                     <div className="w-full max-w-3xl space-y-6">
                         <ModelSwitcher currentModel={currentModel} onModelChange={setCurrentModel} />
 
                         {/* Centered Input */}
-                        <div className="bg-white border-2 border-white shadow-[6px_6px_0px_0px_#00FFF0] p-2">
+                        <div className="bg-background border-2 border-foreground shadow-[6px_6px_0px_0px_var(--color-accent-yellow)] p-2">
                             <ChatInput
                                 onSend={handleSendMessage}
                                 disabled={isLoading}
@@ -100,10 +100,10 @@ export function ChatWindow() {
 
     // Regular chat view with messages
     return (
-        <div className="flex flex-col flex-grow border-2 border-black shadow-[8px_8px_0px_0px_#10162F] bg-white h-full">
+        <div className="flex flex-col flex-grow border-2 border-foreground shadow-[8px_8px_0px_0px_var(--color-card-bg)] bg-background h-full">
             {/* Chat Messages Area */}
-            <div className="flex-grow overflow-y-auto md:p-6 bg-[#10162F] space-y-2">
-                <div className="sticky top-0 z-10 bg-[#10162F]/95 backdrop-blur-sm pb-4 pt-2">
+            <div className="flex-grow overflow-y-auto md:p-6 bg-card-bg space-y-2">
+                <div className="sticky top-0 z-10 bg-card-bg/95 backdrop-blur-sm pb-4 pt-2">
                     <ModelSwitcher currentModel={currentModel} onModelChange={setCurrentModel} />
                 </div>
 
@@ -125,7 +125,7 @@ export function ChatWindow() {
             </div>
 
             {/* Input Area */}
-            <div className="p-4 bg-white border-t-2 border-black">
+            <div className="p-4 bg-background border-t-2 border-foreground">
                 <ChatInput
                     onSend={handleSendMessage}
                     disabled={isLoading}

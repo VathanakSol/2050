@@ -28,10 +28,10 @@ export function ChatMessage({ role, content, model = 'general', metadata }: Chat
         <div className={`flex w-full ${isUser ? 'justify-end' : 'justify-start'} mb-4`}>
             <div
                 className={`max-w-[85%] p-4 rounded-lg border-2 shadow-sm ${isUser
-                    ? 'bg-accent-yellow text-[#10162F] border-black'
+                    ? 'bg-accent-yellow text-foreground border-foreground'
                     : isCodeFixer
-                        ? 'bg-[#10162F] text-gray-100 border-accent-yellow shadow-[4px_4px_0px_0px_#FFD300]'
-                        : 'bg-[#1F2937] text-gray-100 border-gray-700'
+                        ? 'bg-background text-foreground border-accent-yellow shadow-[4px_4px_0px_0px_var(--color-accent-yellow)]'
+                        : 'bg-card-bg text-foreground border-foreground/20'
                     }`}
             >
                 {/* Header */}
@@ -59,7 +59,7 @@ export function ChatMessage({ role, content, model = 'general', metadata }: Chat
                             />
                         )}
 
-                        <div className="prose prose-invert prose-sm max-w-none">
+                        <div className="prose dark:prose-invert prose-sm max-w-none">
                             <ReactMarkdown
                                 remarkPlugins={[remarkGfm]}
                                 components={{
@@ -76,7 +76,7 @@ export function ChatMessage({ role, content, model = 'general', metadata }: Chat
                                             />
                                         ) : (
                                             <code
-                                                className="bg-gray-800 px-1.5 py-0.5 rounded text-accent-mint font-mono text-xs"
+                                                className="bg-card-bg px-1.5 py-0.5 rounded text-accent-mint font-mono text-xs border border-foreground/20"
                                                 {...props}
                                             >
                                                 {children}
@@ -94,28 +94,28 @@ export function ChatMessage({ role, content, model = 'general', metadata }: Chat
                                         </h2>
                                     ),
                                     h3: ({ children }) => (
-                                        <h3 className="text-lg font-bold text-white mb-2 mt-2">
+                                        <h3 className="text-lg font-bold text-foreground mb-2 mt-2">
                                             {children}
                                         </h3>
                                     ),
                                     p: ({ children }) => (
-                                        <p className="text-gray-300 mb-3 leading-relaxed">{children}</p>
+                                        <p className="text-foreground/80 mb-3 leading-relaxed">{children}</p>
                                     ),
                                     ul: ({ children }) => (
-                                        <ul className="list-disc list-inside space-y-1 mb-3 text-gray-300">
+                                        <ul className="list-disc list-inside space-y-1 mb-3 text-foreground/80">
                                             {children}
                                         </ul>
                                     ),
                                     ol: ({ children }) => (
-                                        <ol className="list-decimal list-inside space-y-1 mb-3 text-gray-300">
+                                        <ol className="list-decimal list-inside space-y-1 mb-3 text-foreground/80">
                                             {children}
                                         </ol>
                                     ),
                                     li: ({ children }) => (
-                                        <li className="ml-4 text-gray-300">{children}</li>
+                                        <li className="ml-4 text-foreground/80">{children}</li>
                                     ),
                                     blockquote: ({ children }) => (
-                                        <blockquote className="border-l-4 border-accent-yellow pl-4 italic text-gray-400 my-3">
+                                        <blockquote className="border-l-4 border-accent-yellow pl-4 italic text-foreground/60 my-3">
                                             {children}
                                         </blockquote>
                                     ),

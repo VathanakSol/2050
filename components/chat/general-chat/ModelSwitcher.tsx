@@ -8,12 +8,12 @@ interface ModelSwitcherProps {
 export function ModelSwitcher({ currentModel, onModelChange }: ModelSwitcherProps) {
     return (
         <div className="flex justify-center mb-6">
-            <div className="bg-gray-100 p-1 rounded-lg inline-flex border border-gray-200">
+            <div className="bg-card-bg p-1 rounded-lg inline-flex border border-foreground/20">
                 <button
                     onClick={() => onModelChange('general')}
                     className={`px-4 py-2 rounded-md text-sm font-bold transition-all ${currentModel === 'general'
-                        ? 'bg-white text-black shadow-sm border border-gray-200'
-                        : 'text-gray-500 hover:text-gray-900'
+                        ? 'bg-background text-foreground shadow-sm border border-foreground/20'
+                        : 'text-foreground/60 hover:text-foreground'
                         }`}
                 >
                     General
@@ -21,8 +21,8 @@ export function ModelSwitcher({ currentModel, onModelChange }: ModelSwitcherProp
                 <button
                     onClick={() => onModelChange('code-fixer')}
                     className={`px-4 py-2 rounded-md text-sm font-bold transition-all flex items-center gap-2 ${currentModel === 'code-fixer'
-                        ? 'bg-[#10162F] text-accent-yellow shadow-sm'
-                        : 'text-gray-500 hover:text-gray-900'
+                        ? 'bg-card-bg text-accent-yellow shadow-sm'
+                        : 'text-foreground/60 hover:text-foreground'
                         }`}
                 >
                     <span>Code Fixer</span>
