@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Github, Search, AlertTriangle, CheckCircle, Info, ExternalLink, FileText, Shield, Lightbulb } from 'lucide-react';
+import { Search, AlertTriangle, CheckCircle, Info, ExternalLink, FileText, Shield, Lightbulb, Key } from 'lucide-react';
 import { ProjectTree } from '@/components/project-analyzer/ProjectTree';
 
 interface AnalysisResult {
@@ -46,7 +46,7 @@ export default function ProjectAnalyzer() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [error, setError] = useState('');
-  const [showDemo, setShowDemo] = useState(true);
+
   const [activeTab, setActiveTab] = useState<TabType>('structure');
 
   const analyzeRepository = async () => {
@@ -81,7 +81,6 @@ export default function ProjectAnalyzer() {
 
       const data = await response.json();
       setResult(data);
-      setShowDemo(false);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred during analysis');
     } finally {
@@ -172,7 +171,7 @@ export default function ProjectAnalyzer() {
           <div className="space-y-4">
 
             {/* Repository Info */}
-            <div className="relative bg-white border-2 border-gray-200 p-4 overflow-hidden shadow-[4px_4px_0px_0px_#e0e0e0]"> 
+            <div className="relative bg-white border-2 border-gray-200 p-4 overflow-hidden shadow-[4px_4px_0px_0px_#e0e0e0]">
               <div className="relative z-10">
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex-1">
@@ -203,7 +202,7 @@ export default function ProjectAnalyzer() {
                     rel="noopener noreferrer"
                     className="group flex items-center gap-1.5 px-3 py-2 text-[#10162F] rounded font-bold text-xs transition-all duration-300 hover:-translate-y-0.5 border border-gray-200"
                   >
-                    <ExternalLink className="w-3 h-3 transition-transform duration-300" />  
+                    <ExternalLink className="w-3 h-3 transition-transform duration-300" />
                   </a>
                 </div>
               </div>
@@ -211,21 +210,24 @@ export default function ProjectAnalyzer() {
 
             {/* Tab Navigation */}
             <div className="bg-card-bg border border-gray-800 rounded-lg overflow-hidden">
-              <div className="flex border-b border-gray-700 overflow-x-auto scrollbar-thin">
+
+<div className="flex bg-card-bg border-b border-gray-700/50 overflow-x-auto">
                 {[
                   {
                     id: 'structure',
                     label: 'Project Structure',
                     icon: FileText,
                     shortLabel: 'Structure',
-                    count: result.structure.totalFiles
+                    count: result.structure.totalFiles,
+                    locked: false
                   },
                   {
                     id: 'techstack',
                     label: 'Tech Stack',
                     icon: Info,
                     shortLabel: 'Tech Stack',
-                    count: result.techStack.languages.length + result.techStack.frameworks.length
+                    count: result.techStack.languages.length + result.techStack.frameworks.length,
+                    locked: true
                   },
                   {
                     id: 'security',
@@ -233,39 +235,68 @@ export default function ProjectAnalyzer() {
                     icon: Shield,
                     shortLabel: 'Security',
                     count: result.security.risks.length,
-                    badge: result.security.score
+                    badge: result.security.score,
+                    locked: true
                   },
                   {
                     id: 'suggestions',
                     label: 'Suggestions',
                     icon: Lightbulb,
                     shortLabel: 'Suggestions',
-                    count: result.suggestions.length
+                    count: result.suggestions.length,
+                    locked: true
                   }
                 ].map((tab) => {
                   const Icon = tab.icon;
+                  const isLocked = tab.locked;
+                  const isClickable = !isLocked;
+                  
                   return (
                     <button
                       key={tab.id}
-                      onClick={() => setActiveTab(tab.id as TabType)}
-                      className={`flex-1 min-w-0 flex flex-col sm:flex-row items-center justify-center gap-1 px-2 sm:px-4 py-2 sm:py-3 text-xs font-medium transition-all duration-200 whitespace-nowrap ${activeTab === tab.id
-                        ? 'bg-accent-yellow text-[#10162F] border-b-2 border-accent-yellow'
-                        : 'text-foreground/70 hover:text-foreground hover:bg-foreground/5'
+                      onClick={() => isClickable && setActiveTab(tab.id as TabType)}
+                      disabled={isLocked}
+                      className={`relative flex-1 min-w-0 flex flex-col sm:flex-row items-center justify-between gap-2 px-3 sm:px-6 py-3 sm:py-4 text-xs font-semibold transition-colors duration-200 whitespace-nowrap group ${
+                        isLocked 
+                          ? 'text-foreground/30 cursor-not-allowed opacity-60' 
+                          : activeTab === tab.id
+                            ? 'bg-background text-foreground border-b-2 border-accent-yellow'
+                            : 'text-foreground/60 hover:text-foreground hover:bg-background/50 cursor-pointer'
                         }`}
                     >
-                      <div className="flex items-center gap-1">
-                        <Icon className="w-3 h-3 flex-shrink-0" />
-                        <span className="hidden md:inline">{tab.label}</span>
-                        <span className="md:hidden">{tab.shortLabel}</span>
-                        {tab.count !== undefined && tab.count > 0 && (
-                          <span className={`text-xs px-1 py-0.5 rounded-full font-semibold ${activeTab === tab.id
-                            ? 'bg-[#10162F]/20 text-[#10162F]'
-                            : 'bg-accent-yellow/20 text-accent-yellow'
-                            }`}>
-                            {tab.id === 'security' && tab.badge ? `${tab.badge}/100` : tab.count}
-                          </span>
-                        )}
+                      <div className="flex items-center gap-2">
+                        <div className={`p-1.5 rounded-lg transition-colors duration-200 ${
+                          isLocked
+                            ? 'bg-foreground/5 text-foreground/30'
+                            : activeTab === tab.id
+                              ? 'bg-accent-yellow/10 text-accent-yellow'
+                              : 'bg-foreground/5 text-foreground/50 group-hover:bg-accent-yellow/10 group-hover:text-accent-yellow'
+                          }`}>
+                          <Icon className="w-4 h-4" />
+                        </div>
+                        <div className="flex flex-col items-start">
+                          <div className="flex items-center gap-1.5">
+                            <span className="hidden md:inline text-left">{tab.label}</span>
+                            <span className="md:hidden text-left">{tab.shortLabel}</span>
+                            {isLocked && <Key className="w-3 h-3 text-foreground/30" />}
+                          </div>
+                          {isLocked ? (
+                            <span className="text-xs text-foreground/30 font-medium">Coming Soon</span>
+                          ) : (
+                            tab.count !== undefined && tab.count > 0 && (
+                              <span className={`text-xs px-2 py-0.5 rounded-full font-bold mt-0.5 ${activeTab === tab.id
+                                ? 'bg-accent-yellow text-background'
+                                : 'bg-foreground/10 text-foreground/60 group-hover:bg-accent-yellow/20 group-hover:text-accent-yellow'
+                                }`}>
+                                {tab.id === 'security' && tab.badge ? `${tab.badge}/100` : tab.count}
+                              </span>
+                            )
+                          )}
+                        </div>
                       </div>
+                      {!isLocked && activeTab === tab.id && (
+                        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-accent-yellow"></div>
+                      )}
                     </button>
                   );
                 })}
@@ -276,15 +307,15 @@ export default function ProjectAnalyzer() {
                 {activeTab === 'structure' && (
                   <div className="animate-in fade-in duration-300">
                     <div className="mb-3">
-                      <h3 className="text-base font-semibold text-foreground mb-1">Project Structure</h3>
+                      <h3 className="text-base font-semibold text-foreground mb-1">Overview</h3>
                       <p className="text-foreground/60 text-xs">
                         Interactive tree view of your repository structure with {result.structure.totalFiles} files across {result.structure.directories.length} directories.
                       </p>
                     </div>
                     <ProjectTree
                       files={result.structure.files}
-                      directories={result.structure.directories}
-                      totalFiles={result.structure.totalFiles}
+                      directories={result.structure.directories} 
+                      totalFiles={result.structure.files.length}                    
                     />
                   </div>
                 )}

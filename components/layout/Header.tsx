@@ -195,10 +195,10 @@ export function Header() {
                     </div>
                     <div className="flex items-center gap-3">
                         <h1 className="text-2xl font-sans font-bold text-foreground tracking-tight">
-                            Developer 2050
+                            Developer
                         </h1>
                         <span className="px-2 py-0.5 text-[10px] font-black bg-accent-yellow text-[#10162F] transform -rotate-6 border border-white shadow-[2px_2px_0px_0px_#FFFFFF]">
-                            v1.9
+                            v2.0
                         </span>
                     </div>
                 </div>
