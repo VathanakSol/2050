@@ -6,6 +6,7 @@ import { Analytics } from "@vercel/analytics/react";
 import { Footer } from "@/components/layout/Footer";
 import { siteConfig } from "@/config/site";
 import { ThemeProvider } from "@/components/theme/theme-provider";
+import { AuthProvider } from "@/contexts/AuthContext";
 
 
 const spaceGrotesk = Space_Grotesk({
@@ -101,12 +102,14 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <Header />
-          <main className="flex-grow">
-            {children}
-          </main>
-          <Footer />
-          <Analytics />
+          <AuthProvider>
+            <Header />
+            <main className="flex-grow">
+              {children}
+            </main>
+            <Footer />
+            <Analytics />
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>

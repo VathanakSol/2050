@@ -36,6 +36,7 @@ export const IdeLayout = () => {
         if (!isAutoRun) return;
 
         const timer = setTimeout(() => {
+            // eslint-disable-next-line react-hooks/immutability
             setLogs([]); // Clear logs before new run
             setRunId(prev => prev + 1); // Force remount
             setDebouncedHtml(htmlCode);
@@ -57,6 +58,7 @@ export const IdeLayout = () => {
     const [activeTab, setActiveTab] = useState<'html' | 'css' | 'javascript'>('html');
     const [logs, setLogs] = useState<LogEntry[]>([]);
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleConsoleLog = React.useCallback((type: 'log' | 'error' | 'warn', message: any[]) => {
         setLogs(prev => [...prev, {
             type,
@@ -77,30 +79,43 @@ export const IdeLayout = () => {
                     </h1>
                 </div>
 
-                <div className="flex items-center gap-3">
-                    <div className="flex items-center gap-2 bg-gray-100 dark:bg-[#0d1117] rounded-md p-1 border border-gray-300 dark:border-gray-700">
-                        <label className="flex items-center gap-2 px-2 py-1 text-xs cursor-pointer select-none">
-                            <input
-                                type="checkbox"
-                                checked={isAutoRun}
-                                onChange={(e) => setIsAutoRun(e.target.checked)}
-                                className="w-3 h-3 accent-blue-500 rounded"
-                            />
-                            <span className={isAutoRun ? 'text-blue-500 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400'}>Auto Run</span>
+                <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2">
+                        <label className="flex items-center gap-3 text-sm cursor-pointer select-none group">
+                            <div className="relative">
+                                <input
+                                    type="checkbox"
+                                    checked={isAutoRun}
+                                    onChange={(e) => setIsAutoRun(e.target.checked)}
+                                    className="sr-only"
+                                />
+                                <div className={`w-11 h-5.5 rounded-full transition-all duration-300 ease-in-out ${isAutoRun
+                                        ? 'bg-accent-yellow shadow-sm'
+                                        : 'bg-gray-300 dark:bg-gray-600'
+                                    }`}>
+                                    <div className={`w-5 h-5 bg-white rounded-full shadow-sm transform transition-all duration-300 ease-in-out ${isAutoRun ? 'translate-x-5' : 'translate-x-0.5'
+                                        } mt-0.5`}></div>
+                                </div>
+                            </div>
+                            <span className={`font-medium transition-all duration-200 ${isAutoRun
+                                    ? 'text-gray-900 dark:text-white'
+                                    : 'text-gray-600 dark:text-gray-400 group-hover:text-gray-800 dark:group-hover:text-gray-200'
+                                }`}>
+                                Auto Run
+                            </span>
                         </label>
                     </div>
-
                     <button
                         onClick={handleManualRun}
                         disabled={isAutoRun}
-                        className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-semibold transition-all ${isAutoRun
-                            ? 'bg-gray-300 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-not-allowed opacity-50'
-                            : 'bg-green-600 hover:bg-green-500 text-white shadow-lg shadow-green-500/20 dark:shadow-green-900/20'
+                        className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${isAutoRun
+                            ? 'bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed opacity-60'
+                            : 'bg-accent-yellow text-white shadow-lg dark:shadow-green-900/30 hover:cursor-pointer dark:hover:shadow-green-900/40 transform hover:scale-105 active:scale-95'
                             }`}
                         title={isAutoRun ? "Disable Auto Run to use Manual Run" : "Run Code (Ctrl+Enter)"}
                     >
-                        <Play size={14} fill="currentColor" />
-                        Run
+                        <Play size={16} fill="currentColor" />
+                        Run Code
                     </button>
                 </div>
             </div>

@@ -21,6 +21,8 @@
     "@prisma/client": "^6.19.0",
     "@sanity/code-input": "^6.0.3",
     "@sanity/image-url": "^2.0.1",
+    "@supabase/ssr": "^0.8.0",
+    "@supabase/supabase-js": "^2.88.0",
     "@uiw/codemirror-theme-vscode": "^4.25.3",
     "@uiw/react-codemirror": "^4.25.3",
     "@vercel/analytics": "^1.6.1",

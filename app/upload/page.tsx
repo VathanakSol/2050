@@ -826,15 +826,15 @@ function UploadFeature() {
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    {/* Preview with enhanced styling */}
-                    <div className="relative inline-block">
+                    {/* Preview with enhanced styling - Full width/height */}
+                    <div className="relative w-full">
                       <div className="absolute -inset-1 bg-linear-to-r from-accent-yellow via-accent-mint to-accent-blue rounded-2xl blur opacity-30"></div>
                       <Image
-                        height={300}
-                        width={300}
+                        height={800}
+                        width={800}
                         src={previewUrl}
                         alt="Preview"
-                        className="relative max-h-56 rounded-xl shadow-2xl border-2 border-accent-mint/50"
+                        className="relative w-full h-auto max-h-[400px] object-contain rounded-xl shadow-2xl border-2 border-accent-mint/50"
                       />
                       <button
                         type="button"

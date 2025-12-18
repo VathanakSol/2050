@@ -68,8 +68,6 @@ function ComingSoon() {
                     <span className="text-accent-yellow">SOON</span>
                 </h1>
 
-               
-
                 {/* CTA Button */}
                 <div className="pt-8">
                     <Link

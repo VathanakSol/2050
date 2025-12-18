@@ -6,7 +6,8 @@ import { useEffect, useState, useRef } from 'react';
 import { BetaToggle } from '@/components/BetaToggle';
 import { DigitalClock } from '@/components/DigitalClock';
 import { useTheme } from 'next-themes';
-import { Sun, Moon } from 'lucide-react';
+import { Sun, Moon, User, LogOut } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 const navIcons = {
     Home: (
@@ -73,6 +74,11 @@ const navIcons = {
         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
         </svg>
+    ),
+    Profile: (
+        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+        </svg>
     )
 };
 
@@ -99,6 +105,7 @@ export function Header() {
     const devHubDropdownRef = useRef<HTMLDivElement>(null);
     const { theme, setTheme } = useTheme();
     const [mounted, setMounted] = useState(false);
+    const { user, signOut } = useAuth();
 
     useEffect(() => {
         // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -198,7 +205,7 @@ export function Header() {
                             Developer
                         </h1>
                         <span className="px-2 py-0.5 text-[10px] font-black bg-accent-yellow text-[#10162F] transform -rotate-6 border border-white shadow-[2px_2px_0px_0px_#FFFFFF]">
-                            v2.0
+                            v2.1
                         </span>
                     </div>
                 </div>
@@ -209,7 +216,6 @@ export function Header() {
                             {navItems.map((item) => {
                                 if (item.isDropdown) {
                                     const isDevHub = item.dropdownType === 'devhub';
-                                    const isTools = item.dropdownType === 'tools';
                                     const dropdownOpen = isDevHub ? devHubOpen : toolsOpen;
                                     const setDropdownOpen = isDevHub ? setDevHubOpen : setToolsOpen;
                                     const dropdownRef = isDevHub ? devHubDropdownRef : toolsDropdownRef;
@@ -281,6 +287,27 @@ export function Header() {
                         <div className="border-l border-gray-700 pl-6 flex items-center gap-4">
                             <BetaToggle flagName="features_enabled" />
                             <DigitalClock />
+                            {user && (
+                                <div className="flex items-center gap-2">
+                                    
+                                    <Link
+                                        href="/profile"                                        
+                                        className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium bg-accent-yellow text-background rounded-full hover:bg-accent-yellow/90 transition-colors"
+                                    >
+                                        <User size={14} />
+                                        Profile
+                                    </Link>
+                                </div>
+                            )}
+                            {!user && (
+                                <Link
+                                    href="/auth/signin"
+                                    className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium bg-accent-yellow text-background rounded-full hover:bg-accent-yellow/90 transition-colors"
+                                >
+                                    <User size={14} />
+                                    Sign In
+                                </Link>
+                            )}
                             {mounted && (
                                 <button
                                     onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
@@ -330,7 +357,6 @@ export function Header() {
                                 {navItems.map((item) => {
                                     if (item.isDropdown) {
                                         const isDevHub = item.dropdownType === 'devhub';
-                                        const isTools = item.dropdownType === 'tools';
                                         const dropdownOpen = isDevHub ? mobileDevHubOpen : mobileToolsOpen;
                                         const setDropdownOpen = isDevHub ? setMobileDevHubOpen : setMobileToolsOpen;
                                         const dropdownItems = isDevHub ? developerHubItems : toolsItems;
@@ -388,15 +414,40 @@ export function Header() {
                             <div className="border-t border-gray-700 px-4 py-3">
                                 <div className="flex items-center justify-between">
                                     <BetaToggle flagName="features_enabled" />
-                                    {mounted && (
-                                        <button
-                                            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                                            className="p-2 rounded-full hover:bg-foreground/10 text-foreground/80 hover:text-accent-yellow transition-all"
-                                            aria-label="Toggle Theme"
-                                        >
-                                            {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
-                                        </button>
-                                    )}
+                                    <div className="flex items-center gap-2">
+                                        {user && (
+                                            <div className="flex items-center gap-2">
+                                                <Link
+                                                    href="/profile"
+                                                    onClick={() => setMobileOpen(false)}
+                                                    className="p-1.5 rounded-full hover:bg-foreground/10 text-foreground/60 hover:text-accent-yellow transition-all"
+                                                    aria-label="Profile"
+                                                >
+                                                    <User size={14} />
+                                                </Link>
+
+                                            </div>
+                                        )}
+                                        {!user && (
+                                            <Link
+                                                href="/auth/signin"
+                                                onClick={() => setMobileOpen(false)}
+                                                className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium bg-accent-yellow text-background rounded-full hover:bg-accent-yellow/90 transition-colors"
+                                            >
+                                                <User size={14} />
+                                                Sign In
+                                            </Link>
+                                        )}
+                                        {mounted && (
+                                            <button
+                                                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                                                className="p-2 rounded-full hover:bg-foreground/10 text-foreground/80 hover:text-accent-yellow transition-all"
+                                                aria-label="Toggle Theme"
+                                            >
+                                                {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+                                            </button>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         </div>

@@ -1,8 +1,21 @@
 import { S3Client, ListObjectsV2Command, DeleteObjectCommand, CopyObjectCommand } from "@aws-sdk/client-s3";
 import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
 
 export async function GET() {
     try {
+
+        // Check authentication
+        // const supabase = await createClient();
+        // const { data: { user } } = await supabase.auth.getUser();
+        
+        // if (!user) {
+        //     return NextResponse.json(
+        //         { error: 'Unauthorized' },
+        //         { status: 401 }
+        //     );
+        // }
+        
         const s3 = new S3Client({
             region: "auto",
             endpoint: process.env.R2_ENDPOINT,
@@ -43,17 +56,19 @@ export async function GET() {
 
 export async function DELETE(request: NextRequest) {
     try {
-        const body = await request.json();
-        const { key, password } = body;
-
-        // Verify password
-        const deletePassword = process.env.DELETE_PASSWORD;
-        if (!deletePassword || password !== deletePassword) {
+        // Check authentication
+        const supabase = await createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        if (!user) {
             return NextResponse.json(
-                { error: 'Invalid password' },
+                { error: 'Unauthorized' },
                 { status: 401 }
             );
         }
+
+        const body = await request.json();
+        const { key } = body;
 
         if (!key) {
             return NextResponse.json(
@@ -92,17 +107,19 @@ export async function DELETE(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
     try {
-        const body = await request.json();
-        const { oldKey, newKey, password } = body;
-
-        // Verify password
-        const deletePassword = process.env.DELETE_PASSWORD;
-        if (!deletePassword || password !== deletePassword) {
+        // Check authentication
+        const supabase = await createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        if (!user) {
             return NextResponse.json(
-                { error: 'Invalid password' },
+                { error: 'Unauthorized' },
                 { status: 401 }
             );
         }
+
+        const body = await request.json();
+        const { oldKey, newKey } = body;
 
         if (!oldKey || !newKey) {
             return NextResponse.json(
