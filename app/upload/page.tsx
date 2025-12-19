@@ -114,13 +114,6 @@ function UploadFeature() {
   const [previewImage, setPreviewImage] = useState<ImageData | null>(null);
   const [previewIndex, setPreviewIndex] = useState<number>(0);
 
-  // Delete modal states
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [deletingImage, setDeletingImage] = useState<ImageData | null>(null);
-  const [deletePassword, setDeletePassword] = useState("");
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [deleteError, setDeleteError] = useState("");
-
   useEffect(() => {
     fetchImages();
   }, []);
@@ -192,18 +185,7 @@ function UploadFeature() {
     if (!selectedFile) return;
 
     setIsUploading(true);
-    setUploadProgress(0);
     setNotification(null);
-
-    const progressInterval = setInterval(() => {
-      setUploadProgress((prev) => {
-        if (prev >= 90) {
-          clearInterval(progressInterval);
-          return 90;
-        }
-        return prev + 10;
-      });
-    }, 200);
 
     try {
       const formData = new FormData();
@@ -213,9 +195,6 @@ function UploadFeature() {
         method: "POST",
         body: formData,
       });
-
-      clearInterval(progressInterval);
-      setUploadProgress(100);
 
       const data = await res.json();
 
@@ -230,7 +209,6 @@ function UploadFeature() {
         setTimeout(() => {
           setSelectedFile(null);
           setPreviewUrl("");
-          setUploadProgress(0);
           setNotification(null);
           setShowUploadModal(false);
         }, 2000);
@@ -238,7 +216,6 @@ function UploadFeature() {
         throw new Error(data.error || "Upload failed");
       }
     } catch (error) {
-      clearInterval(progressInterval);
       setNotification({
         type: "error",
         message: `Upload failed: ${error instanceof Error ? error.message : "Unknown error"
@@ -252,11 +229,53 @@ function UploadFeature() {
   const handleReset = () => {
     setSelectedFile(null);
     setPreviewUrl("");
-    setUploadProgress(0);
     setNotification(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
+  };
+
+  // Security: Helper function to sanitize filename and prevent XSS attacks
+  // This prevents malicious filenames from executing scripts or causing DOM manipulation
+  const sanitizeFilename = (filename: string): string => {
+    // Remove any potentially dangerous characters and limit length
+    return filename
+      .replace(/[^a-zA-Z0-9._-]/g, '_') // Replace unsafe chars with underscore
+      .substring(0, 100) // Limit length to prevent issues
+      .replace(/^\.+/, '') // Remove leading dots
+      .replace(/\.+$/, '') || 'download'; // Remove trailing dots, fallback if empty
+  };
+
+  // Helper function to generate safe filename from image data
+  const generateSafeFilename = (image: ImageData, index: number): string => {
+    // Extract filename from URL or key, fallback to generic name
+    let baseName = 'image';
+    
+    try {
+      // Try to extract filename from image key first
+      if (image.key && typeof image.key === 'string') {
+        const keyParts = image.key.split('/').pop()?.split('.')[0];
+        if (keyParts) {
+          baseName = keyParts;
+        }
+      } else {
+        // Fallback to URL-based extraction
+        const urlPath = new URL(image.url).pathname;
+        const urlFilename = urlPath.split('/').pop()?.split('.')[0];
+        if (urlFilename) {
+          baseName = urlFilename;
+        }
+      }
+    } catch {
+      // If URL parsing fails, use fallback
+      baseName = 'image';
+    }
+
+    // Sanitize the base name and add safe index
+    const sanitizedBase = sanitizeFilename(baseName);
+    const safeIndex = Math.max(1, Math.min(9999, Math.floor(Math.abs(Number(index))) + 1));
+    
+    return `${sanitizedBase}_${safeIndex}.jpg`;
   };
 
   const handleDownload = async (image: ImageData, index: number) => {
@@ -288,14 +307,23 @@ function UploadFeature() {
       clearInterval(progressInterval);
       setDownloadProgress(100);
 
+      // Generate safe filename to prevent XSS
+      const safeFilename = generateSafeFilename(image, index);
+
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `image-${index + 1}.jpg`;
+      // Use sanitized filename to prevent XSS attacks
+      a.download = safeFilename;
+      
+      // Use more secure DOM manipulation
+      a.style.display = 'none';
       document.body.appendChild(a);
       a.click();
-      window.URL.revokeObjectURL(url);
+      
+      // Clean up immediately
       document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
 
       setDownloadStatus("success");
 
@@ -343,6 +371,7 @@ function UploadFeature() {
   };
 
   // Infinite scroll - load more images
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const loadMoreImages = () => {
     if (isLoadingMore || displayedCount >= filteredImages.length) return;
 
@@ -686,9 +715,9 @@ function UploadFeature() {
 
       {showUploadModal && (
         <div className="fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-[fade-in_0.2s_ease-out]">
-          <div className="bg-card-bg rounded-2xl max-w-xl w-full max-h-[85vh] overflow-y-auto border-2 border-accent-yellow/20 shadow-2xl shadow-accent-yellow/10 animate-[fade-in-up_0.3s_ease-out]">
+          <div className="bg-card-bg rounded-2xl max-w-xl w-full max-h-[85vh] overflow-hidden border-2 border-accent-yellow/20 shadow-2xl shadow-accent-yellow/10 animate-[fade-in-up_0.3s_ease-out] flex flex-col">
             {/* Header with accent border */}
-            <div className="sticky top-0 bg-gradient-to-r from-card-bg to-card-bg border-b-2 border-accent-yellow/30 p-5 flex items-center justify-between z-10">
+            <div className="bg-gradient-to-r from-card-bg to-card-bg border-b-2 border-accent-yellow/30 p-5 flex items-center justify-between">
               <div>
                 <h2 className="text-2xl font-bold text-accent-yellow mb-1">
                   Upload Public Image
@@ -720,15 +749,18 @@ function UploadFeature() {
               </button>
             </div>
 
-            <form onSubmit={uploadImage} className="p-5">
+            {/* Main Content - Scrollable */}
+            <div className="flex-1 overflow-y-auto">
+
+              <form onSubmit={uploadImage} className="p-5">
               {/* Warning Message */}
-              <div className="mb-5 bg-accent-yellow text-background px-4 sm:px-6 py-3 sm:py-2 font-black uppercase tracking-wider border-2 border-foreground/20 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] hover:translate-y-1 hover:shadow-none active:translate-y-1 active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed transition-all whitespace-normal sm:whitespace-nowrap flex items-center gap-2 rounded-lg animate-[fade-in_0.3s_ease-out]">
+              <div className="mb-5 bg-white text-background px-4 sm:px-6 py-3 sm:py-2 font-black uppercase tracking-wider border-2 border-foreground/20 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] hover:translate-y-1 hover:shadow-none active:translate-y-1 active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed transition-all whitespace-normal sm:whitespace-nowrap flex items-center gap-2 rounded-lg animate-[fade-in_0.3s_ease-out]">
                 <div className="flex flex-col sm:flex-row items-start gap-2 sm:gap-3 w-full">
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-background font-bold text-xs sm:text-sm mb-1 leading-tight break-words">
+                    <h3 className="text-accent-yellow font-bold text-xs sm:text-sm mb-1 leading-tight break-words">
                       ↘️ Public Upload Warning
                     </h3>
-                    <p className="text-background/90 text-xs leading-relaxed break-words">
+                    <p className="text-accent-yellow text-xs leading-relaxed break-words">
                       <strong>
                         Do not upload{" "}
                         <span className="bg-background/20 px-1 sm:px-2 py-0.5 inline-block text-xs sm:text-sm break-words rounded">
@@ -736,10 +768,7 @@ function UploadFeature() {
                         </span>
                       </strong>
                     </p>
-                    <p className="text-background/90 text-xs leading-relaxed mt-1 break-words">
-                      All images uploaded here are{" "}
-                      <strong>publicly accessible</strong> to anyone.
-                    </p>
+                    
                   </div>
                 </div>
               </div>
@@ -799,22 +828,10 @@ function UploadFeature() {
                       <p className="text-xl font-bold text-foreground mb-2">
                         {isDragging ? "Drop your image here!" : "Drag & Drop"}
                       </p>
-                      <p className="text-foreground/60 text-sm mb-3">
-                        or click to browse your images
-                      </p>
+                      
                       <div className="flex items-center justify-center gap-2 text-sm text-foreground/50">
-                        <svg
-                          className="w-4 h-4"
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                        <span>Supports: JPG, PNG, GIF, WebP</span>
+                        
+                        <span className="text-accent-yellow font-semibold">Supports: JPG, PNG, GIF, WebP</span>
                       </div>
                     </div>
 
@@ -894,25 +911,7 @@ function UploadFeature() {
                 )}
               </div>
 
-              {/* Progress Bar */}
-              {isUploading && (
-                <div className="mt-5 space-y-2 animate-[fade-in_0.3s_ease-out]">
-                  <div className="flex justify-between items-center">
-                    <span className="text-foreground/80 font-semibold">
-                      Uploading your image...
-                    </span>
-                    <span className="text-accent-yellow font-bold text-lg">
-                      {uploadProgress}%
-                    </span>
-                  </div>
-                  <div className="h-3 bg-foreground/10 rounded-full overflow-hidden border border-foreground/20">
-                    <div
-                      className="h-full bg-accent-yellow transition-all duration-300 ease-out shadow-lg"
-                      style={{ width: `${uploadProgress}%` }}
-                    />
-                  </div>
-                </div>
-              )}
+
 
               {/* Notification */}
               {notification && (
@@ -972,13 +971,12 @@ function UploadFeature() {
                   type="submit"
                   disabled={!selectedFile || isUploading}
                   className={`
-                                        flex-1 py-3 px-6 rounded-lg font-bold text-base
-                                        transition-all duration-300 ease-out
-                                        ${selectedFile && !isUploading
-                      ? ""
-                      : " text-gray-500 cursor-not-allowed opacity-50"
+                    flex-1 py-3 px-6 rounded-lg font-bold text-base transition-all duration-300 ease-out
+                    ${selectedFile && !isUploading
+                      ? "bg-[#FFD300] text-[#10162F] border-2 border-white shadow-[4px_4px_0px_0px_#FFFFFF] hover:translate-y-1 hover:shadow-none active:translate-y-1 active:shadow-none"
+                      : "bg-gray-400 text-gray-600 cursor-not-allowed opacity-50"
                     }
-                                    `}
+                  `}
                 >
                   {isUploading ? (
                     <span className="flex items-center justify-center gap-2">
@@ -1004,7 +1002,7 @@ function UploadFeature() {
                       Uploading...
                     </span>
                   ) : (
-                    <span className="bg-[#FFD300] justify-center text-[#10162F] px-6 py-2 font-black uppercase tracking-wider border-2 border-white shadow-[4px_4px_0px_0px_#FFFFFF] hover:translate-y-1 hover:shadow-none active:translate-y-1 active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed transition-all whitespace-nowrap flex items-center gap-2">
+                    <span className="flex items-center justify-center gap-2 font-black uppercase tracking-wider">
                       <svg
                         className="w-5 h-5"
                         fill="none"
@@ -1023,7 +1021,10 @@ function UploadFeature() {
                   )}
                 </button>
               </div>
-            </form>
+              </form>
+            </div>
+
+
           </div>
         </div>
       )}

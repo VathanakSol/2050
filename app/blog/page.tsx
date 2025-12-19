@@ -3,6 +3,8 @@ import { urlFor } from '@/sanity/lib/image'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Metadata } from 'next'
+import { ResponsiveAd } from '@/components/ads'
+import { adsenseConfig } from '@/config/adsense'
 
 // SEO Metadata for Blog Page
 export const metadata: Metadata = {
@@ -120,11 +122,30 @@ export default async function BlogPage() {
     return (
         <div className="mx-auto container px-4 py-8 max-w-5xl">
             <h1 className="text-3xl text-accent-yellow font-bold mb-8 border-b pb-4">Latest News</h1>
+            
+            {/* Header Ad */}
+            {adsenseConfig.enabled && adsenseConfig.adSlots.header && (
+                <ResponsiveAd 
+                    dataAdClient={adsenseConfig.publisherId}
+                    dataAdSlot={adsenseConfig.adSlots.header}
+                    className="mb-6"
+                />
+            )}
+            
             <div className="flex flex-col gap-6">
 
                 {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                {posts.map((post: any) => (
-                    <Link href={`/blog/${post.slug.current}`} key={post._id} className="group block">
+                {posts.map((post: any, index: number) => (
+                    <div key={post._id}>
+                        {/* Show ad after every 3rd post */}
+                        {index > 0 && index % 3 === 0 && adsenseConfig.enabled && adsenseConfig.adSlots.inArticle && (
+                            <ResponsiveAd 
+                                dataAdClient={adsenseConfig.publisherId}
+                                dataAdSlot={adsenseConfig.adSlots.inArticle}
+                                className="my-6"
+                            />
+                        )}
+                        <Link href={`/blog/${post.slug.current}`} className="group block">
                         <div className="flex flex-col border-2 border-red-500 md:flex-row gap-5 items-start pb-2 border-b border-gray-100 dark:border-gray-800 last:border-0">
                             {post.mainImage && (
                                 <div className="relative w-full md:w-[200px] h-[130px] flex-shrink-0 rounded-lg overflow-hidden bg-gray-100">
@@ -154,9 +175,19 @@ export default async function BlogPage() {
                                 </div>
                             </div>
                         </div>
-                    </Link>
+                        </Link>
+                    </div>
                 ))}
             </div>
+            
+            {/* Footer Ad */}
+            {adsenseConfig.enabled && adsenseConfig.adSlots.footer && (
+                <ResponsiveAd 
+                    dataAdClient={adsenseConfig.publisherId}
+                    dataAdSlot={adsenseConfig.adSlots.footer}
+                    className="mt-8"
+                />
+            )}
             {posts.length === 0 && (
                 <div className="text-center text-gray-500 mt-12 py-12 bg-gray-50 dark:bg-gray-900 rounded-lg">
                     <p className="text-lg">No posts found.</p>

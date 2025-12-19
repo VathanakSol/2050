@@ -8,7 +8,7 @@ export function Footer() {
                     <span className="mx-2 border-2 border-accent-yellow px-4 py-1 font-bold rounded-xl">2050 Developer Platform</span>
                 </p>
                 <div className="flex gap-8 text-sm font-bold text-white">
-                    <a href="#" className="hover:text-accent-yellow">Privacy Policy</a>
+                    <a href="/privacy" className="hover:text-accent-yellow">Privacy Policy</a>
                     <a href="#" className="hover:text-accent-yellow">Terms of Service</a>
                 </div>
             </div>

@@ -7,6 +7,7 @@ import { Footer } from "@/components/layout/Footer";
 import { siteConfig } from "@/config/site";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { AdSenseScript } from "@/components/ads";
 
 
 const spaceGrotesk = Space_Grotesk({
@@ -109,6 +110,9 @@ export default function RootLayout({
             </main>
             <Footer />
             <Analytics />
+            {process.env.NEXT_PUBLIC_ADSENSE_PUBLISHER_ID && (
+              <AdSenseScript publisherId={process.env.NEXT_PUBLIC_ADSENSE_PUBLISHER_ID} />
+            )}
           </AuthProvider>
         </ThemeProvider>
       </body>
