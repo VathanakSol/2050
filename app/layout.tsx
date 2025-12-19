@@ -94,6 +94,19 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        {/* AdSense Verification Meta Tag */}
+        {process.env.NEXT_PUBLIC_ADSENSE_PUBLISHER_ID && (
+          <>
+            <meta name="google-adsense-account" content={process.env.NEXT_PUBLIC_ADSENSE_PUBLISHER_ID} />
+            <script
+              async
+              src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_ADSENSE_PUBLISHER_ID}`}
+              crossOrigin="anonymous"
+            />
+          </>
+        )}
+      </head>
       <body
         className={`${spaceGrotesk.variable} ${spaceGrotesk.className} ${kantumruy.variable} antialiased flex flex-col min-h-screen`}
       >
@@ -110,9 +123,6 @@ export default function RootLayout({
             </main>
             <Footer />
             <Analytics />
-            {process.env.NEXT_PUBLIC_ADSENSE_PUBLISHER_ID && (
-              <AdSenseScript publisherId={process.env.NEXT_PUBLIC_ADSENSE_PUBLISHER_ID} />
-            )}
           </AuthProvider>
         </ThemeProvider>
       </body>

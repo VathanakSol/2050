@@ -9,7 +9,7 @@ export function Footer() {
                 </p>
                 <div className="flex gap-8 text-sm font-bold text-white">
                     <a href="/privacy" className="hover:text-accent-yellow">Privacy Policy</a>
-                    <a href="#" className="hover:text-accent-yellow">Terms of Service</a>
+                    <a href="/terms" className="hover:text-accent-yellow">Terms of Service</a>
                 </div>
             </div>
         </footer>
