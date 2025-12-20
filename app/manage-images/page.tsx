@@ -67,8 +67,14 @@ export default function ManageImages() {
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(5);
 
+    // Helper function to extract filename from key
+    const getDisplayFilename = (key: string): string => {
+        // Remove the "uploads/" prefix and return just the filename
+        return key.replace(/^uploads\//, '');
+    };
+
     const filteredImages = images.filter((img) =>
-        img.key.toLowerCase().includes(searchQuery.toLowerCase())
+        getDisplayFilename(img.key).toLowerCase().includes(searchQuery.toLowerCase())
     );
 
     // Pagination calculations
@@ -172,21 +178,25 @@ export default function ManageImages() {
 
     const handleRenameClick = (image: ImageData) => {
         setImageToRename(image);
-        setNewFilename(image.key);
+        // Set the filename without the "uploads/" prefix for editing
+        setNewFilename(getDisplayFilename(image.key));
         setShowRenameModal(true);
     };
 
     const confirmRename = async () => {
-        if (!imageToRename || !newFilename || newFilename === imageToRename.key) return;
+        if (!imageToRename || !newFilename || newFilename === getDisplayFilename(imageToRename.key)) return;
 
         setIsRenaming(true);
         try {
+            // Add the "uploads/" prefix back when sending to API
+            const newKey = `uploads/${newFilename}`;
+            
             const res = await fetch("/api/images", {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     oldKey: imageToRename.key,
-                    newKey: newFilename
+                    newKey: newKey
                 }),
             });
 
@@ -345,8 +355,8 @@ export default function ManageImages() {
                                                 </div>
                                             </td>
                                             <td className="p-4">
-                                                <div className="font-mono text-sm text-accent-yellow truncate max-w-[200px]" title={img.key}>
-                                                    {img.key}
+                                                <div className="font-mono text-sm text-accent-yellow truncate max-w-[200px]" title={getDisplayFilename(img.key)}>
+                                                    {getDisplayFilename(img.key)}
                                                 </div>
                                             </td>
                                             <td className="p-4 text-sm text-foreground/60">
@@ -525,7 +535,7 @@ export default function ManageImages() {
                                 </button>
                                 <button
                                     onClick={confirmRename}
-                                    disabled={isRenaming || !newFilename || newFilename === imageToRename.key}
+                                    disabled={isRenaming || !newFilename || newFilename === getDisplayFilename(imageToRename.key)}
                                     className="flex-1 px-4 py-3 bg-accent-yellow hover:bg-accent-yellow/90 text-background rounded-xl font-bold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     {isRenaming ? "Renaming..." : "Save Changes"}
@@ -565,7 +575,7 @@ export default function ManageImages() {
 
                             <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4">
                                 <p className="text-red-300 text-sm font-medium">
-                                    Are you sure you want to permanently delete <span className="text-foreground font-mono">{imageToDelete.key}</span>?
+                                    Are you sure you want to permanently delete <span className="text-foreground font-mono">{getDisplayFilename(imageToDelete.key)}</span>?
                                 </p>
                             </div>
 

@@ -85,7 +85,7 @@ function UploadFeature() {
   const [previewUrl, setPreviewUrl] = useState<string>("");
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
+  const [customFileName, setCustomFileName] = useState<string>("");
   const [notification, setNotification] = useState<{
     type: "success" | "error";
     message: string;
@@ -93,6 +93,7 @@ function UploadFeature() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const filenameInputRef = useRef<HTMLInputElement>(null);
   const categoryScrollRef = useRef<HTMLDivElement>(null);
   const loadMoreRef = useRef<HTMLDivElement>(null);
 
@@ -150,9 +151,17 @@ function UploadFeature() {
   const handleFileSelect = (file: File) => {
     if (file && file.type.startsWith("image/")) {
       setSelectedFile(file);
+      // Generate a clean filename without extension for editing
+      const nameWithoutExt = file.name.replace(/\.[^/.]+$/, '');
+      setCustomFileName(nameWithoutExt);
       const reader = new FileReader();
       reader.onloadend = () => {
         setPreviewUrl(reader.result as string);
+        // Auto-focus the filename input after a short delay
+        setTimeout(() => {
+          filenameInputRef.current?.focus();
+          filenameInputRef.current?.select();
+        }, 100);
       };
       reader.readAsDataURL(file);
     }
@@ -189,7 +198,20 @@ function UploadFeature() {
 
     try {
       const formData = new FormData();
-      formData.append("file", selectedFile);
+
+      // Create a new file with the custom name if it was changed
+      const fileExtension = selectedFile.name.split('.').pop() || 'jpg';
+      const finalFileName = customFileName.trim()
+        ? `${customFileName.trim()}.${fileExtension}`
+        : selectedFile.name;
+
+      // Create a new File object with the custom name
+      const renamedFile = new File([selectedFile], finalFileName, {
+        type: selectedFile.type,
+        lastModified: selectedFile.lastModified,
+      });
+
+      formData.append("file", renamedFile);
 
       const res = await fetch("/api/upload", {
         method: "POST",
@@ -209,6 +231,7 @@ function UploadFeature() {
         setTimeout(() => {
           setSelectedFile(null);
           setPreviewUrl("");
+          setCustomFileName("");
           setNotification(null);
           setShowUploadModal(false);
         }, 2000);
@@ -229,6 +252,7 @@ function UploadFeature() {
   const handleReset = () => {
     setSelectedFile(null);
     setPreviewUrl("");
+    setCustomFileName("");
     setNotification(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
@@ -250,7 +274,7 @@ function UploadFeature() {
   const generateSafeFilename = (image: ImageData, index: number): string => {
     // Extract filename from URL or key, fallback to generic name
     let baseName = 'image';
-    
+
     try {
       // Try to extract filename from image key first
       if (image.key && typeof image.key === 'string') {
@@ -274,7 +298,7 @@ function UploadFeature() {
     // Sanitize the base name and add safe index
     const sanitizedBase = sanitizeFilename(baseName);
     const safeIndex = Math.max(1, Math.min(9999, Math.floor(Math.abs(Number(index))) + 1));
-    
+
     return `${sanitizedBase}_${safeIndex}.jpg`;
   };
 
@@ -315,12 +339,12 @@ function UploadFeature() {
       a.href = url;
       // Use sanitized filename to prevent XSS attacks
       a.download = safeFilename;
-      
+
       // Use more secure DOM manipulation
       a.style.display = 'none';
       document.body.appendChild(a);
       a.click();
-      
+
       // Clean up immediately
       document.body.removeChild(a);
       window.URL.revokeObjectURL(url);
@@ -753,63 +777,272 @@ function UploadFeature() {
             <div className="flex-1 overflow-y-auto">
 
               <form onSubmit={uploadImage} className="p-5">
-              {/* Warning Message */}
-              <div className="mb-5 bg-white text-background px-4 sm:px-6 py-3 sm:py-2 font-black uppercase tracking-wider border-2 border-foreground/20 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] hover:translate-y-1 hover:shadow-none active:translate-y-1 active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed transition-all whitespace-normal sm:whitespace-nowrap flex items-center gap-2 rounded-lg animate-[fade-in_0.3s_ease-out]">
-                <div className="flex flex-col sm:flex-row items-start gap-2 sm:gap-3 w-full">
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-accent-yellow font-bold text-xs sm:text-sm mb-1 leading-tight break-words">
-                      ↘️ Public Upload Warning
-                    </h3>
-                    <p className="text-accent-yellow text-xs leading-relaxed break-words">
-                      <strong>
-                        Do not upload{" "}
-                        <span className="bg-background/20 px-1 sm:px-2 py-0.5 inline-block text-xs sm:text-sm break-words rounded">
-                          sensitive or private data!
-                        </span>
-                      </strong>
-                    </p>
-                    
+                {/* Warning Message */}
+                <div className="mb-5 bg-white text-background px-4 sm:px-6 py-3 sm:py-2 font-black uppercase tracking-wider border-2 border-foreground/20 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] hover:translate-y-1 hover:shadow-none active:translate-y-1 active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed transition-all whitespace-normal sm:whitespace-nowrap flex items-center gap-2 rounded-lg animate-[fade-in_0.3s_ease-out]">
+                  <div className="flex flex-col sm:flex-row items-start gap-2 sm:gap-3 w-full">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-accent-yellow font-bold text-xs sm:text-sm mb-1 leading-tight break-words">
+                        ↘️ Public Upload Warning
+                      </h3>
+                      <p className="text-accent-yellow text-xs leading-relaxed break-words">
+                        <strong>
+                          Do not upload{" "}
+                          <span className="bg-background/20 px-1 sm:px-2 py-0.5 inline-block text-xs sm:text-sm break-words rounded">
+                            sensitive or private data!
+                          </span>
+                        </strong>
+                      </p>
+
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Upload Area */}
-              <div
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-                onDrop={handleDrop}
-                onClick={() => fileInputRef.current?.click()}
-                className={`
+                {/* Upload Area */}
+                <div
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                  onClick={() => fileInputRef.current?.click()}
+                  className={`
                                     relative border-2 border-dashed rounded-xl p-10 text-center cursor-pointer
                                     transition-all duration-300 ease-out
                                     ${isDragging
-                    ? "border-accent-mint bg-accent-mint/10 scale-[1.02] shadow-lg shadow-accent-mint/20"
-                    : "border-foreground/30 hover:border-accent-yellow hover:bg-accent-yellow/5 hover:shadow-lg"
-                  }
+                      ? "border-accent-mint bg-accent-mint/10 scale-[1.02] shadow-lg shadow-accent-mint/20"
+                      : "border-foreground/30 hover:border-accent-yellow hover:bg-accent-yellow/5 hover:shadow-lg"
+                    }
                                 `}
-              >
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  name="file"
-                  accept="image/*"
-                  onChange={handleInputChange}
-                  className="hidden"
-                />
+                >
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    name="file"
+                    accept="image/*"
+                    onChange={handleInputChange}
+                    className="hidden"
+                  />
 
-                {!previewUrl ? (
-                  <div className="space-y-4">
-                    {/* Icon with glow effect */}
-                    <div className="flex justify-center">
-                      <div
-                        className={`p-3 rounded-xl ${isDragging ? "bg-accent-mint/20" : "bg-foreground/10"
-                          } transition-all duration-300`}
-                      >
+                  {!previewUrl ? (
+                    <div className="space-y-4">
+                      {/* Icon with glow effect */}
+                      <div className="flex justify-center">
+                        <div
+                          className={`p-3 rounded-xl ${isDragging ? "bg-accent-mint/20" : "bg-foreground/10"
+                            } transition-all duration-300`}
+                        >
+                          <svg
+                            className={`w-12 h-12 transition-all duration-300 ${isDragging
+                              ? "text-accent-mint scale-110"
+                              : "text-accent-yellow"
+                              }`}
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                            />
+                          </svg>
+                        </div>
+                      </div>
+
+                      <div>
+                        <p className="text-xl font-bold text-foreground mb-2">
+                          {isDragging ? "Drop your image here!" : "Drag & Drop"}
+                        </p>
+
+                        <div className="flex items-center justify-center gap-2 text-sm text-foreground/50">
+
+                          <span className="text-accent-yellow font-semibold">Supports: JPG, PNG, GIF, WebP</span>
+                        </div>
+                      </div>
+
+                      <div className="pt-2">
+                        <button className="bg-accent-yellow text-background px-8 py-4 font-black uppercase tracking-wider border-2 border-foreground/20 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] hover:translate-y-1 hover:shadow-none active:translate-y-1 active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed transition-all whitespace-nowrap">
+                          Browse Files
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {/* Preview with enhanced styling - Full width/height */}
+                      <div className="relative w-full">
+                        <div className="absolute -inset-1 bg-linear-to-r from-accent-yellow via-accent-mint to-accent-blue rounded-2xl blur opacity-30"></div>
+                        <Image
+                          height={800}
+                          width={800}
+                          src={previewUrl}
+                          alt="Preview"
+                          className="relative w-full h-auto max-h-[400px] object-contain rounded-xl shadow-2xl border-2 border-accent-mint/50"
+                        />
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleReset();
+                          }}
+                          className="absolute -top-3 -right-3 bg-red-500 text-white rounded-full p-2 hover:bg-red-600 hover:scale-110 transition-all duration-200 shadow-xl"
+                        >
+                          <svg
+                            className="w-5 h-5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M6 18L18 6M6 6l12 12"
+                            />
+                          </svg>
+                        </button>
+                      </div>
+
+                      {/* File info card with editable filename */}
+                      <div className="text-left bg-gradient-to-br from-card-bg/80 to-card-bg/50 rounded-lg p-4 border border-accent-yellow/20 space-y-4">
+
+
+                        {/* Editable filename input */}
+                        <div className="space-y-2">
+                          <label className="block text-xs font-semibold text-foreground/70 uppercase tracking-wider">
+                            Filename
+                          </label>
+                          <div className="relative">
+                            <input
+                              ref={filenameInputRef}
+                              type="text"
+                              value={customFileName}
+                              onChange={(e) => {
+                                // Remove invalid filename characters
+                                const sanitized = e.target.value.replace(/[<>:"/\\|?*]/g, '');
+                                setCustomFileName(sanitized);
+                              }}
+                              onClick={(e) => e.stopPropagation()}
+                              placeholder="Enter filename..."
+                              className="w-full bg-card-bg border-2 border-foreground/20 rounded-lg px-3 py-2.5 text-foreground placeholder:text-foreground/50 focus:border-accent-yellow focus:outline-none transition-colors text-sm font-medium"
+                              maxLength={50}
+                            />
+                            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-foreground/50">
+                              .{selectedFile?.name.split('.').pop() || 'jpg'}
+                            </div>
+                          </div>
+
+                          <div className="flex items-start gap-3">
+                            <div className="flex justify-between w-full items-center">
+                              <p className="text-xs text-accent-yellow font-semibold">
+                                READY TO UPLOAD
+                              </p>
+                              <p className="text-xs text-foreground/60">
+                                {selectedFile &&
+                                  `${(selectedFile.size / 1024).toFixed(2)} KB`}
+                              </p>
+                            </div>
+                          </div>
+
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+
+
+                {/* Notification */}
+                {notification && (
+                  <div
+                    className={`mt-5 p-4 rounded-lg border-2 animate-[fade-in_0.3s_ease-out] ${notification.type === "success"
+                      ? "bg-green-500/10 border-green-500 text-green-400"
+                      : "bg-red-500/10 border-red-500 text-red-400"
+                      }`}
+                  >
+                    <div className="flex items-start gap-3">
+                      {notification.type === "success" ? (
+                        <div className="p-2 bg-green-500/20 rounded-lg">
+                          <svg
+                            className="w-5 h-5 flex-shrink-0"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                            />
+                          </svg>
+                        </div>
+                      ) : (
+                        <div className="p-2 bg-red-500/20 rounded-lg">
+                          <svg
+                            className="w-5 h-5 flex-shrink-0"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                            />
+                          </svg>
+                        </div>
+                      )}
+                      <div>
+                        <p className="font-bold text-base mb-1">
+                          {notification.type === "success" ? "Success!" : "Error"}
+                        </p>
+                        <p className="text-sm">{notification.message}</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Action Buttons */}
+                <div className="mt-6 flex gap-3">
+                  <button
+                    type="submit"
+                    disabled={!selectedFile || isUploading || !customFileName.trim()}
+                    className={`
+                    flex-1 py-3 px-6 rounded-lg font-bold text-base transition-all duration-300 ease-out
+                    ${selectedFile && !isUploading && customFileName.trim()
+                        ? "bg-[#FFD300] text-[#10162F] border-2 border-white shadow-[4px_4px_0px_0px_#FFFFFF] hover:translate-y-1 hover:shadow-none active:translate-y-1 active:shadow-none"
+                        : "bg-gray-400 text-gray-600 cursor-not-allowed opacity-50"
+                      }
+                  `}
+                  >
+
+                    {isUploading ? (
+                      <span className="flex items-center justify-center gap-2">
                         <svg
-                          className={`w-12 h-12 transition-all duration-300 ${isDragging
-                            ? "text-accent-mint scale-110"
-                            : "text-accent-yellow"
-                            }`}
+                          className="animate-spin h-5 w-5"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          />
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          />
+                        </svg>
+                        Uploading...
+                      </span>
+                    ) : (
+                      <span className="flex items-center justify-center gap-2 font-black uppercase tracking-wider">
+                        <svg
+                          className="w-5 h-5"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -821,206 +1054,11 @@ function UploadFeature() {
                             d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
                           />
                         </svg>
-                      </div>
-                    </div>
-
-                    <div>
-                      <p className="text-xl font-bold text-foreground mb-2">
-                        {isDragging ? "Drop your image here!" : "Drag & Drop"}
-                      </p>
-                      
-                      <div className="flex items-center justify-center gap-2 text-sm text-foreground/50">
-                        
-                        <span className="text-accent-yellow font-semibold">Supports: JPG, PNG, GIF, WebP</span>
-                      </div>
-                    </div>
-
-                    <div className="pt-2">
-                      <button className="bg-accent-yellow text-background px-8 py-4 font-black uppercase tracking-wider border-2 border-foreground/20 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] hover:translate-y-1 hover:shadow-none active:translate-y-1 active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed transition-all whitespace-nowrap">
-                        Browse Files
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {/* Preview with enhanced styling - Full width/height */}
-                    <div className="relative w-full">
-                      <div className="absolute -inset-1 bg-linear-to-r from-accent-yellow via-accent-mint to-accent-blue rounded-2xl blur opacity-30"></div>
-                      <Image
-                        height={800}
-                        width={800}
-                        src={previewUrl}
-                        alt="Preview"
-                        className="relative w-full h-auto max-h-[400px] object-contain rounded-xl shadow-2xl border-2 border-accent-mint/50"
-                      />
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleReset();
-                        }}
-                        className="absolute -top-3 -right-3 bg-red-500 text-white rounded-full p-2 hover:bg-red-600 hover:scale-110 transition-all duration-200 shadow-xl"
-                      >
-                        <svg
-                          className="w-5 h-5"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M6 18L18 6M6 6l12 12"
-                          />
-                        </svg>
-                      </button>
-                    </div>
-
-                    {/* File info card */}
-                    <div className="text-left bg-gradient-to-br from-card-bg/80 to-card-bg/50 rounded-lg p-4 border border-accent-yellow/20">
-                      <div className="flex items-start gap-3">
-                        <div className="p-2 bg-accent-yellow/20 rounded-lg">
-                          <svg
-                            className="w-5 h-5 text-accent-yellow"
-                            fill="currentColor"
-                            viewBox="0 0 20 20"
-                          >
-                            <path
-                              fillRule="evenodd"
-                              d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
-                              clipRule="evenodd"
-                            />
-                          </svg>
-                        </div>
-                        <div className="flex-1">
-                          <p className="text-xs text-accent-yellow font-semibold mb-1">
-                            READY TO UPLOAD
-                          </p>
-                          <p className="text-foreground font-bold truncate text-base max-w-[300px]">
-                            {selectedFile?.name}
-                          </p>
-                          <p className="text-sm text-foreground/60 mt-1">
-                            {selectedFile &&
-                              `${(selectedFile.size / 1024).toFixed(2)} KB`}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-
-
-              {/* Notification */}
-              {notification && (
-                <div
-                  className={`mt-5 p-4 rounded-lg border-2 animate-[fade-in_0.3s_ease-out] ${notification.type === "success"
-                    ? "bg-green-500/10 border-green-500 text-green-400"
-                    : "bg-red-500/10 border-red-500 text-red-400"
-                    }`}
-                >
-                  <div className="flex items-start gap-3">
-                    {notification.type === "success" ? (
-                      <div className="p-2 bg-green-500/20 rounded-lg">
-                        <svg
-                          className="w-5 h-5 flex-shrink-0"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                          />
-                        </svg>
-                      </div>
-                    ) : (
-                      <div className="p-2 bg-red-500/20 rounded-lg">
-                        <svg
-                          className="w-5 h-5 flex-shrink-0"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                          />
-                        </svg>
-                      </div>
+                        Upload Now
+                      </span>
                     )}
-                    <div>
-                      <p className="font-bold text-base mb-1">
-                        {notification.type === "success" ? "Success!" : "Error"}
-                      </p>
-                      <p className="text-sm">{notification.message}</p>
-                    </div>
-                  </div>
+                  </button>
                 </div>
-              )}
-
-              {/* Action Buttons */}
-              <div className="mt-6 flex gap-3">
-                <button
-                  type="submit"
-                  disabled={!selectedFile || isUploading}
-                  className={`
-                    flex-1 py-3 px-6 rounded-lg font-bold text-base transition-all duration-300 ease-out
-                    ${selectedFile && !isUploading
-                      ? "bg-[#FFD300] text-[#10162F] border-2 border-white shadow-[4px_4px_0px_0px_#FFFFFF] hover:translate-y-1 hover:shadow-none active:translate-y-1 active:shadow-none"
-                      : "bg-gray-400 text-gray-600 cursor-not-allowed opacity-50"
-                    }
-                  `}
-                >
-                  {isUploading ? (
-                    <span className="flex items-center justify-center gap-2">
-                      <svg
-                        className="animate-spin h-5 w-5"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                      >
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="4"
-                        />
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                        />
-                      </svg>
-                      Uploading...
-                    </span>
-                  ) : (
-                    <span className="flex items-center justify-center gap-2 font-black uppercase tracking-wider">
-                      <svg
-                        className="w-5 h-5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                        />
-                      </svg>
-                      Upload Now
-                    </span>
-                  )}
-                </button>
-              </div>
               </form>
             </div>
 
