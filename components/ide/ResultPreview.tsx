@@ -6,6 +6,7 @@ interface ResultPreviewProps {
   htmlCode: string;
   cssCode: string;
   jsCode: string;
+  externalLibs?: string[];
   onConsoleLog: (type: 'log' | 'error' | 'warn', message: any[]) => void;
 }
 
@@ -13,6 +14,7 @@ export const ResultPreview: React.FC<ResultPreviewProps> = ({
   htmlCode,
   cssCode,
   jsCode,
+  externalLibs = [],
   onConsoleLog,
 }) => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -93,10 +95,18 @@ export const ResultPreview: React.FC<ResultPreviewProps> = ({
       </script>
     `;
 
+    const libTags = externalLibs.map(lib => {
+      if (lib.endsWith('.css')) {
+        return `<link rel="stylesheet" href="${lib}">`;
+      }
+      return `<script src="${lib}"></script>`;
+    }).join('\n');
+
     const fullHtml = `
       <!DOCTYPE html>
       <html>
         <head>
+          ${libTags}
           <style>${cssCode}</style>
           ${consoleScript}
         </head>

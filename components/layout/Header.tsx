@@ -3,10 +3,9 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState, useRef } from 'react';
-import { BetaToggle } from '@/components/BetaToggle';
 import { DigitalClock } from '@/components/DigitalClock';
 import { useTheme } from 'next-themes';
-import { Sun, Moon, User, LogOut } from 'lucide-react';
+import { Sun, Moon, User } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
 const navIcons = {
@@ -75,6 +74,12 @@ const navIcons = {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
         </svg>
     ),
+    Playground: (
+        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+    ),
     Profile: (
         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -82,27 +87,32 @@ const navIcons = {
     )
 };
 
-const toolsItems = [
-    { name: 'Mini Postman', href: '/mini-postman' },
-    { name: 'Remove BG', href: '/remove-background' },
-    { name: 'Project Analyzer', href: '/project-analyzer' },
-];
-
-const developerHubItems = [
+const learnItems = [
     { name: 'Learning Paths', href: '/learning-path' },
     { name: 'Resources', href: '/resources' },
     { name: 'Learn', href: '/learn' },
 ];
 
+const toolsItems = [
+    { name: 'Mini Postman', href: '/mini-postman' },
+    { name: 'Remove BG', href: '/remove-background' },
+    { name: 'Project Analyzer', href: '/project-analyzer' },
+    { name: 'Playground', href: '/playground' },
+];
+
+const aiItems = [
+    { name: 'AI Chat', href: '/chat' },
+];
+
 export function Header() {
     const pathname = usePathname();
     const [mobileOpen, setMobileOpen] = useState(false);
+    const [learnOpen, setLearnOpen] = useState(false);
+    const [mobileLearnOpen, setMobileLearnOpen] = useState(false);
     const [toolsOpen, setToolsOpen] = useState(false);
     const [mobileToolsOpen, setMobileToolsOpen] = useState(false);
-    const [devHubOpen, setDevHubOpen] = useState(false);
-    const [mobileDevHubOpen, setMobileDevHubOpen] = useState(false);
+    const learnDropdownRef = useRef<HTMLDivElement>(null);
     const toolsDropdownRef = useRef<HTMLDivElement>(null);
-    const devHubDropdownRef = useRef<HTMLDivElement>(null);
     const { theme, setTheme } = useTheme();
     const [mounted, setMounted] = useState(false);
     const { user, signOut } = useAuth();
@@ -114,17 +124,16 @@ export function Header() {
 
     const navItems = [
         { name: 'Home', href: '/' },
-        { name: 'Developer Hub', href: '#', isDropdown: true, dropdownType: 'devhub' },
+        { name: 'Learn', href: '#', isDropdown: true, dropdownType: 'learn' },
         { name: 'Tools', href: '#', isDropdown: true, dropdownType: 'tools' },
-        { name: 'Playground', href: '/playground' },
         { name: 'AI Chat', href: '/chat' },
-        { name: 'Blog', href: '/blog' },
         { name: 'Upload', href: '/upload' },
+        { name: 'Blog', href: '/blog' },
         { name: 'About', href: '/about' },
     ];
 
+    const isLearnActive = learnItems.some(item => pathname === item.href);
     const isToolsActive = toolsItems.some(item => pathname === item.href);
-    const isDevHubActive = developerHubItems.some(item => pathname === item.href);
 
     useEffect(() => {
         // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -135,33 +144,33 @@ export function Header() {
         function onKey(e: KeyboardEvent) {
             if (e.key === 'Escape') {
                 setMobileOpen(false);
+                setLearnOpen(false);
                 setToolsOpen(false);
-                setDevHubOpen(false);
             }
         }
-        if (mobileOpen || toolsOpen || devHubOpen) document.addEventListener('keydown', onKey);
+        if (mobileOpen || learnOpen || toolsOpen) document.addEventListener('keydown', onKey);
         return () => document.removeEventListener('keydown', onKey);
-    }, [mobileOpen, toolsOpen, devHubOpen]);
+    }, [mobileOpen, learnOpen, toolsOpen]);
 
     // Close dropdown when clicking outside
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
+            if (learnDropdownRef.current && !learnDropdownRef.current.contains(event.target as Node)) {
+                setLearnOpen(false);
+            }
             if (toolsDropdownRef.current && !toolsDropdownRef.current.contains(event.target as Node)) {
                 setToolsOpen(false);
             }
-            if (devHubDropdownRef.current && !devHubDropdownRef.current.contains(event.target as Node)) {
-                setDevHubOpen(false);
-            }
         }
 
-        if (toolsOpen || devHubOpen) {
+        if (learnOpen || toolsOpen) {
             document.addEventListener('mousedown', handleClickOutside);
         }
 
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
-    }, [toolsOpen, devHubOpen]);
+    }, [learnOpen, toolsOpen]);
 
     // Prevent background scrolling and avoid layout shift when modal opens
     const bodyPrevStyleRef = useRef<{ overflow?: string; paddingRight?: string } | null>(null);
@@ -196,6 +205,7 @@ export function Header() {
     return (
         <header className="w-full py-4 px-4 sm:px-6 lg:px-8 bg-background border-b border-gray-800 relative z-30 transition-colors duration-300">
             <div className="max-w-7xl mx-auto flex items-center justify-between">
+
                 <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-foreground text-background flex items-center justify-center font-black text-xs shadow-[4px_4px_0px_0px_#FFD300]">
                         2050
@@ -205,68 +215,86 @@ export function Header() {
                             Developer
                         </h1>
                         <span className="px-2 py-0.5 text-[10px] font-black bg-accent-yellow text-[#10162F] transform -rotate-6 border border-white shadow-[2px_2px_0px_0px_#FFFFFF]">
-                            v2.1
+                            v2.2
                         </span>
                     </div>
                 </div>
 
                 <div className="flex items-center gap-4">
-                    <div className="hidden md:flex items-center gap-6">
-                        <nav className="flex gap-6 text-sm font-medium text-foreground">
+
+                    <div className="hidden md:flex items-center gap-2">
+                        <nav className="flex gap-1 text-sm font-medium text-foreground">
                             {navItems.map((item) => {
                                 if (item.isDropdown) {
-                                    const isDevHub = item.dropdownType === 'devhub';
-                                    const dropdownOpen = isDevHub ? devHubOpen : toolsOpen;
-                                    const setDropdownOpen = isDevHub ? setDevHubOpen : setToolsOpen;
-                                    const dropdownRef = isDevHub ? devHubDropdownRef : toolsDropdownRef;
-                                    const dropdownItems = isDevHub ? developerHubItems : toolsItems;
-                                    const isActive = isDevHub ? isDevHubActive : isToolsActive;
+                                    const isLearn = item.dropdownType === 'learn';
+
+                                    const dropdownOpen = isLearn ? learnOpen : toolsOpen;
+                                    const setDropdownOpen = isLearn ? setLearnOpen : setToolsOpen;
+                                    const dropdownRef = isLearn ? learnDropdownRef : toolsDropdownRef;
+                                    const dropdownItems = isLearn ? learnItems : toolsItems;
+                                    const isActive = isLearn ? isLearnActive : isToolsActive;
 
                                     return (
                                         <div key={item.name} className="relative" ref={dropdownRef}>
                                             <button
                                                 onClick={() => {
-                                                    if (isDevHub) {
-                                                        setDevHubOpen(!devHubOpen);
+                                                    if (isLearn) {
+                                                        setLearnOpen(!learnOpen);
                                                         setToolsOpen(false);
                                                     } else {
                                                         setToolsOpen(!toolsOpen);
-                                                        setDevHubOpen(false);
+                                                        setLearnOpen(false);
                                                     }
                                                 }}
                                                 onMouseEnter={() => {
-                                                    if (isDevHub) {
-                                                        setDevHubOpen(true);
+                                                    if (isLearn) {
+                                                        setLearnOpen(true);
                                                         setToolsOpen(false);
                                                     } else {
                                                         setToolsOpen(true);
-                                                        setDevHubOpen(false);
+                                                        setLearnOpen(false);
                                                     }
                                                 }}
-                                                className={`flex items-center gap-1 transition-colors hover:text-accent-yellow ${isActive ? 'text-accent-yellow font-semibold' : 'text-foreground/80'}`}
+                                                className={`flex items-center gap-1.5 px-3 py-2 rounded-full text-sm font-medium transition-all duration-200 ${isActive
+                                                    ? 'bg-accent-yellow/15 text-accent-yellow'
+                                                    : 'text-foreground/80 hover:bg-foreground/5 hover:text-accent-yellow'
+                                                    }`}
                                             >
                                                 {item.name}
-                                                <svg className={`w-4 h-4 transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <svg className={`w-3.5 h-3.5 transition-transform duration-200 ${dropdownOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                                                 </svg>
                                             </button>
 
                                             {dropdownOpen && (
                                                 <div
-                                                    className="absolute top-full mt-2 left-0 w-56 bg-card-bg border border-gray-700 rounded-lg shadow-xl overflow-hidden z-50"
+                                                    className="absolute top-full mt-2 left-0 min-w-[220px] bg-card-bg border border-gray-700/50 rounded-xl shadow-2xl overflow-hidden z-50 backdrop-blur-sm animate-in fade-in slide-in-from-top-2 duration-200"
                                                     onMouseLeave={() => setDropdownOpen(false)}
                                                 >
-                                                    {dropdownItems.map((dropdownItem) => (
-                                                        <Link
-                                                            key={dropdownItem.name}
-                                                            href={dropdownItem.href}
-                                                            onClick={() => setDropdownOpen(false)}
-                                                            className={`flex items-center gap-3 px-4 py-3 text-sm font-medium transition-colors ${pathname === dropdownItem.href ? 'text-accent-yellow bg-accent-yellow/10' : 'text-foreground/90 hover:text-accent-yellow hover:bg-foreground/5'}`}
-                                                        >
-                                                            {navIcons[dropdownItem.name as keyof typeof navIcons]}
-                                                            {dropdownItem.name}
-                                                        </Link>
-                                                    ))}
+                                                    <div className="p-2">
+                                                        {dropdownItems.map((dropdownItem, index) => (
+                                                            <Link
+                                                                key={dropdownItem.name}
+                                                                href={dropdownItem.href}
+                                                                onClick={() => setDropdownOpen(false)}
+                                                                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 ${pathname === dropdownItem.href
+                                                                    ? 'text-accent-yellow bg-accent-yellow/15'
+                                                                    : 'text-foreground/90 hover:text-accent-yellow hover:bg-foreground/5'
+                                                                    }`}
+                                                                style={{ animationDelay: `${index * 30}ms` }}
+                                                            >
+                                                                <div className={`flex-shrink-0 transition-transform duration-200 ${pathname === dropdownItem.href ? 'scale-110' : 'group-hover:scale-110'}`}>
+                                                                    {navIcons[dropdownItem.name as keyof typeof navIcons]}
+                                                                </div>
+                                                                <span className="flex-1">{dropdownItem.name}</span>
+                                                                {pathname === dropdownItem.href && (
+                                                                    <svg className="w-3.5 h-3.5 text-accent-yellow" fill="currentColor" viewBox="0 0 20 20">
+                                                                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                                                    </svg>
+                                                                )}
+                                                            </Link>
+                                                        ))}
+                                                    </div>
                                                 </div>
                                             )}
                                         </div>
@@ -277,27 +305,26 @@ export function Header() {
                                     <Link
                                         key={item.name}
                                         href={item.href}
-                                        className={`transition-colors hover:text-accent-yellow ${pathname === item.href ? 'text-accent-yellow font-semibold' : 'text-foreground/80'}`}
+                                        className={`px-3 py-2 rounded-full text-sm font-medium transition-all duration-200 ${pathname === item.href
+                                            ? 'bg-accent-yellow/15 text-accent-yellow'
+                                            : 'text-foreground/80 hover:bg-foreground/5 hover:text-accent-yellow'
+                                            }`}
                                     >
                                         {item.name}
                                     </Link>
                                 );
                             })}
                         </nav>
-                        <div className="border-l border-gray-700 pl-6 flex items-center gap-4">
-                            <BetaToggle flagName="features_enabled" />
-                            <DigitalClock />
+                        <div className="flex items-center gap-3">
+
                             {user && (
-                                <div className="flex items-center gap-2">
-                                    
-                                    <Link
-                                        href="/profile"                                        
-                                        className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium bg-accent-yellow text-background rounded-full hover:bg-accent-yellow/90 transition-colors"
-                                    >
-                                        <User size={14} />
-                                        Profile
-                                    </Link>
-                                </div>
+                                <Link
+                                    href="/profile"
+                                    className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium bg-accent-yellow text-background rounded-full hover:bg-accent-yellow/90 transition-colors"
+                                >
+                                    <User size={14} />
+                                    Profile
+                                </Link>
                             )}
                             {!user && (
                                 <Link
@@ -352,43 +379,60 @@ export function Header() {
                         aria-label="Mobile navigation"
                         className="fixed left-1/2 transform -translate-x-1/2 top-20 z-50 w-[min(640px,calc(100%-32px))]"
                     >
-                        <div className="rounded-lg bg-card-bg border border-gray-800 shadow-lg overflow-hidden">
-                            <nav className="flex flex-col p-4 gap-2">
+                        <div className="rounded-xl bg-card-bg border border-gray-700/50 shadow-2xl overflow-hidden backdrop-blur-sm">
+                            <nav className="flex flex-col p-3 gap-1.5">
                                 {navItems.map((item) => {
                                     if (item.isDropdown) {
-                                        const isDevHub = item.dropdownType === 'devhub';
-                                        const dropdownOpen = isDevHub ? mobileDevHubOpen : mobileToolsOpen;
-                                        const setDropdownOpen = isDevHub ? setMobileDevHubOpen : setMobileToolsOpen;
-                                        const dropdownItems = isDevHub ? developerHubItems : toolsItems;
-                                        const isActive = isDevHub ? isDevHubActive : isToolsActive;
-                                        const iconKey = isDevHub ? 'Developer Hub' : 'Tools';
+                                        const isLearn = item.dropdownType === 'learn';
+
+                                        const dropdownOpen = isLearn ? mobileLearnOpen : mobileToolsOpen;
+                                        const setDropdownOpen = isLearn ? setMobileLearnOpen : setMobileToolsOpen;
+                                        const dropdownItems = isLearn ? learnItems : toolsItems;
+                                        const isActive = isLearn ? isLearnActive : isToolsActive;
+                                        const iconKey = isLearn ? 'Learning Paths' : 'Tools';
 
                                         return (
-                                            <div key={item.name}>
+                                            <div key={item.name} className="rounded-lg overflow-hidden">
                                                 <button
                                                     onClick={() => setDropdownOpen(!dropdownOpen)}
-                                                    className={`flex items-center justify-between w-full px-4 py-2 rounded text-sm font-semibold ${isActive ? 'text-accent-yellow' : 'text-foreground/90 hover:text-accent-yellow'}`}
+                                                    className={`flex items-center justify-between w-full px-4 py-3 rounded-lg text-sm font-semibold transition-all duration-200 ${isActive
+                                                        ? 'bg-accent-yellow/15 text-accent-yellow'
+                                                        : 'text-foreground/90 hover:bg-foreground/5 hover:text-accent-yellow'
+                                                        }`}
                                                 >
                                                     <div className="flex items-center gap-3">
-                                                        {navIcons[iconKey as keyof typeof navIcons]}
+                                                        <div className={`transition-transform duration-200 ${dropdownOpen ? 'scale-110' : ''}`}>
+                                                            {navIcons[iconKey as keyof typeof navIcons]}
+                                                        </div>
                                                         {item.name}
                                                     </div>
-                                                    <svg className={`w-4 h-4 transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <svg className={`w-4 h-4 transition-transform duration-200 ${dropdownOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                                                     </svg>
                                                 </button>
 
                                                 {dropdownOpen && (
-                                                    <div className="ml-8 mt-1 space-y-1">
-                                                        {dropdownItems.map((dropdownItem) => (
+                                                    <div className="mt-1 ml-4 mr-2 space-y-1 pb-2 animate-in slide-in-from-top-2 duration-200">
+                                                        {dropdownItems.map((dropdownItem, index) => (
                                                             <Link
                                                                 key={dropdownItem.name}
                                                                 href={dropdownItem.href}
                                                                 onClick={() => setMobileOpen(false)}
-                                                                className={`flex items-center gap-3 w-full px-4 py-2 rounded text-sm font-medium ${pathname === dropdownItem.href ? 'text-accent-yellow bg-accent-yellow/10' : 'text-foreground/70 hover:text-accent-yellow'}`}
+                                                                className={`flex items-center gap-3 w-full px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 ${pathname === dropdownItem.href
+                                                                    ? 'text-accent-yellow bg-accent-yellow/15'
+                                                                    : 'text-foreground/70 hover:text-accent-yellow hover:bg-foreground/5'
+                                                                    }`}
+                                                                style={{ animationDelay: `${index * 30}ms` }}
                                                             >
-                                                                {navIcons[dropdownItem.name as keyof typeof navIcons]}
-                                                                {dropdownItem.name}
+                                                                <div className={`flex-shrink-0 transition-transform duration-200 ${pathname === dropdownItem.href ? 'scale-110' : ''}`}>
+                                                                    {navIcons[dropdownItem.name as keyof typeof navIcons]}
+                                                                </div>
+                                                                <span className="flex-1">{dropdownItem.name}</span>
+                                                                {pathname === dropdownItem.href && (
+                                                                    <svg className="w-3.5 h-3.5 text-accent-yellow" fill="currentColor" viewBox="0 0 20 20">
+                                                                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                                                    </svg>
+                                                                )}
                                                             </Link>
                                                         ))}
                                                     </div>
@@ -402,31 +446,33 @@ export function Header() {
                                             key={item.name}
                                             href={item.href}
                                             onClick={() => setMobileOpen(false)}
-                                            className={`flex items-center gap-3 w-full px-4 py-2 rounded text-sm font-semibold ${pathname === item.href ? 'text-accent-yellow' : 'text-foreground/90 hover:text-accent-yellow'}`}
+                                            className={`flex items-center gap-3 w-full px-4 py-3 rounded-lg text-sm font-semibold transition-all duration-200 ${pathname === item.href
+                                                ? 'bg-accent-yellow/15 text-accent-yellow'
+                                                : 'text-foreground/90 hover:bg-foreground/5 hover:text-accent-yellow'
+                                                }`}
                                         >
-                                            {navIcons[item.name as keyof typeof navIcons]}
+                                            <div className={`transition-transform duration-200 ${pathname === item.href ? 'scale-110' : ''}`}>
+                                                {navIcons[item.name as keyof typeof navIcons]}
+                                            </div>
                                             {item.name}
                                         </Link>
                                     );
                                 })}
                             </nav>
 
-                            <div className="border-t border-gray-700 px-4 py-3">
+                            <div className="border-t border-gray-700/50 px-4 py-3 bg-foreground/5">
                                 <div className="flex items-center justify-between">
-                                    <BetaToggle flagName="features_enabled" />
+                                    <DigitalClock />
                                     <div className="flex items-center gap-2">
                                         {user && (
-                                            <div className="flex items-center gap-2">
-                                                <Link
-                                                    href="/profile"
-                                                    onClick={() => setMobileOpen(false)}
-                                                    className="p-1.5 rounded-full hover:bg-foreground/10 text-foreground/60 hover:text-accent-yellow transition-all"
-                                                    aria-label="Profile"
-                                                >
-                                                    <User size={14} />
-                                                </Link>
-
-                                            </div>
+                                            <Link
+                                                href="/profile"
+                                                onClick={() => setMobileOpen(false)}
+                                                className="p-1.5 rounded-full hover:bg-foreground/10 text-foreground/60 hover:text-accent-yellow transition-all"
+                                                aria-label="Profile"
+                                            >
+                                                <User size={14} />
+                                            </Link>
                                         )}
                                         {!user && (
                                             <Link

@@ -13,6 +13,7 @@ interface CodeEditorProps {
     code: string;
     onChange: (value: string) => void;
     className?: string;
+    fontSize?: number;
 }
 
 export const CodeEditor: React.FC<CodeEditorProps> = ({
@@ -20,6 +21,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
     code,
     onChange,
     className,
+    fontSize = 14,
 }) => {
     const { theme } = useTheme();
     const [mounted, setMounted] = useState(false);
@@ -50,7 +52,8 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
                     theme={theme === 'light' ? 'light' : vscodeDark}
                     extensions={getExtensions()}
                     onChange={(value) => onChange(value)}
-                    className="h-full text-base"
+                    className="h-full"
+                    style={{ fontSize: `${fontSize}px` }}
                     basicSetup={{
                         lineNumbers: true,
                         foldGutter: true,

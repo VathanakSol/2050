@@ -5,6 +5,7 @@ import Image from "next/image";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 
 interface ImageData {
     url: string;
@@ -120,7 +121,7 @@ export default function ManageImages() {
                 },
                 body: JSON.stringify({ email, page: 'manage-images' }),
             });
-            
+
             const data = await response.json();
             setIsAuthorized(data.authorized);
         } catch (error) {
@@ -190,7 +191,7 @@ export default function ManageImages() {
         try {
             // Add the "uploads/" prefix back when sending to API
             const newKey = `uploads/${newFilename}`;
-            
+
             const res = await fetch("/api/images", {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
@@ -243,7 +244,7 @@ export default function ManageImages() {
                             </svg>
                         </div>
                         <h1 className="text-2xl pb-8 font-bold text-foreground mb-2">Access Denied</h1>
-                        
+
                         <div className="space-y-3">
                             <button
                                 onClick={() => router.push('/')}
@@ -266,11 +267,8 @@ export default function ManageImages() {
 
     if (isAuthorized === null) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-background p-4">
-                <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent-yellow mx-auto mb-4"></div>
-                    <p className="text-foreground/60">Checking permissions...</p>
-                </div>
+            <div className="min-h-screen bg-background flex items-center justify-center">
+                <LoadingSpinner size="lg" />
             </div>
         );
     }

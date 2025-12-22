@@ -3,10 +3,11 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { createClient } from '@/lib/supabase/client';
-import { User, Mail, Calendar, Shield, Edit2, Save, X, LogOut } from 'lucide-react';
+import { User, Mail, Calendar, Shield, Edit2, Save, X, LogOut, Settings } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { BetaToggle } from '@/components/BetaToggle';
 
 interface UserProfile {
   id: string;
@@ -39,7 +40,7 @@ export default function ProfilePage() {
     try {
       setIsLoading(true);
       const { data, error } = await supabase.auth.getUser();
-      
+
       if (error) {
         console.error('Error fetching user profile:', error);
         return;
@@ -55,7 +56,7 @@ export default function ProfilePage() {
           last_sign_in_at: data.user.last_sign_in_at ?? null,
           user_metadata: data.user.user_metadata || {}
         };
-        
+
         setProfile(userProfile);
         setEditForm({
           full_name: userProfile.user_metadata.full_name || '',
@@ -165,9 +166,9 @@ export default function ProfilePage() {
                   <User size={32} className="text-white" />
                 )}
               </div>
-              
+
             </div>
-            
+
             <div className="text-center md:text-left flex-1">
               <h1 className="text-lg md:text-xl font-bold text-white">
                 {profile.user_metadata.full_name || 'Welcome Back!'}
@@ -179,7 +180,7 @@ export default function ProfilePage() {
                 </span>
               </div>
             </div>
-            
+
             <div className="flex flex-col sm:flex-row gap-2">
               <button
                 onClick={() => setIsEditing(!isEditing)}
@@ -188,7 +189,7 @@ export default function ProfilePage() {
                 {isEditing ? <X size={16} /> : <Edit2 size={16} />}
                 {isEditing ? 'Cancel' : 'Edit Profile'}
               </button>
-              
+
               <button
                 onClick={handleSignOut}
                 className="flex items-center justify-center gap-1.5 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all duration-200 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 text-sm"
@@ -210,7 +211,7 @@ export default function ProfilePage() {
                 <h2 className="text-lg font-bold text-gray-900 dark:text-white">Edit Profile</h2>
                 <p className="text-gray-600 dark:text-gray-400 mt-0.5 text-sm">Update your personal information</p>
               </div>
-              
+
               <div className="p-6 space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -224,7 +225,7 @@ export default function ProfilePage() {
                     placeholder="Enter your full name"
                   />
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Avatar URL
@@ -237,7 +238,7 @@ export default function ProfilePage() {
                     placeholder="Enter avatar image URL"
                   />
                 </div>
-                
+
                 <div className="flex gap-3 pt-3">
                   <button
                     onClick={handleSaveProfile}
@@ -266,7 +267,7 @@ export default function ProfilePage() {
                   <h3 className="text-base font-bold text-accent-yellow">Your Progress</h3>
                   <p className="text-gray-600 dark:text-gray-400 mt-0.5 text-xs">Keep your streak</p>
                 </div>
-                
+
                 <div className="p-4 space-y-3">
                   <div className="relative">
                     <div className="flex items-center justify-between p-3 bg-white dark:from-gray-700 dark:to-gray-800 rounded-lg border border-gray-200 dark:border-gray-600 transition-all duration-200 group">
@@ -283,9 +284,34 @@ export default function ProfilePage() {
                       </div>
                     </div>
                   </div>
-                  
-                  
-                  
+
+
+
+                </div>
+              </div>
+
+              {/* Settings & Preferences */}
+              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden mt-4">
+                <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+                  <h3 className="text-base font-bold text-accent-yellow">Settings</h3>
+                  <p className="text-gray-600 dark:text-gray-400 mt-0.5 text-xs">Manage your preferences</p>
+                </div>
+
+                <div className="p-4 space-y-3">
+                  <div className="group p-3 bg-white dark:from-gray-700 dark:to-gray-800 rounded-lg border border-gray-200 dark:border-gray-600 transition-all duration-200">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 bg-purple-100 dark:bg-purple-800 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                          <Settings className="text-purple-600 dark:text-purple-400" size={14} />
+                        </div>
+                        <div>
+                          <p className="text-xs font-medium text-gray-900 dark:text-white">Beta Features</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">Try experimental features</p>
+                        </div>
+                      </div>
+                      <BetaToggle flagName="features_enabled" />
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -297,7 +323,7 @@ export default function ProfilePage() {
                   <h3 className="text-base font-bold text-accent-yellow dark:text-white">Account Information</h3>
                   <p className="text-gray-600 dark:text-gray-400 mt-0.5 text-xs">Your personal details and account settings</p>
                 </div>
-                
+
                 <div className="p-4">
                   <div className="grid grid-cols-1 gap-3">
                     <div className="group p-3 bg-white dark:from-gray-700 dark:to-gray-800 rounded-lg border border-gray-200 dark:border-gray-600 transition-all duration-200">
@@ -327,22 +353,22 @@ export default function ProfilePage() {
                     </div>
 
                     <div className="relative">
-                    <div className="flex items-center justify-between p-3 dark:from-gray-700 dark:to-gray-800 rounded-lg border border-gray-200 dark:border-gray-600 transition-all duration-200 group">
-                      <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 bg-green-100 dark:bg-green-800 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
-                          <Shield className="text-green-600 dark:text-green-400" size={14} />
-                        </div>
-                        <div>
-                          <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Account Status</p>
-                          <p className="text-sm font-bold text-green-600 dark:text-green-400">Active</p>
+                      <div className="flex items-center justify-between p-3 dark:from-gray-700 dark:to-gray-800 rounded-lg border border-gray-200 dark:border-gray-600 transition-all duration-200 group">
+                        <div className="flex items-center gap-2">
+                          <div className="w-8 h-8 bg-green-100 dark:bg-green-800 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                            <Shield className="text-green-600 dark:text-green-400" size={14} />
+                          </div>
+                          <div>
+                            <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Account Status</p>
+                            <p className="text-sm font-bold text-green-600 dark:text-green-400">Active</p>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
 
                   </div>
 
-                 
+
                 </div>
               </div>
             </div>
