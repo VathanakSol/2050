@@ -39,30 +39,35 @@ export default function ProfilePage() {
   const fetchUserProfile = useCallback(async () => {
     try {
       setIsLoading(true);
-      const { data, error } = await supabase.auth.getUser();
+      const { data: authData, error: authError } = await supabase.auth.getUser();
 
-      if (error) {
-        console.error('Error fetching user profile:', error);
+      if (authError || !authData.user) {
+        console.error('Error fetching user:', authError);
         return;
       }
 
-      if (data.user) {
-        const userProfile: UserProfile = {
-          id: data.user.id,
-          email: data.user.email || '',
-          created_at: data.user.created_at || new Date().toISOString(),
-          updated_at: data.user.updated_at || new Date().toISOString(),
-          email_confirmed_at: data.user.email_confirmed_at ?? null,
-          last_sign_in_at: data.user.last_sign_in_at ?? null,
-          user_metadata: data.user.user_metadata || {}
-        };
+      // Fetch extended profile data from the profiles table
+      const { getProfile } = await import('@/app/actions/user-actions');
+      const profileData = await getProfile(authData.user.id);
 
-        setProfile(userProfile);
-        setEditForm({
-          full_name: userProfile.user_metadata.full_name || '',
-          avatar_url: userProfile.user_metadata.avatar_url || ''
-        });
-      }
+      const userProfile: UserProfile = {
+        id: authData.user.id,
+        email: authData.user.email || '',
+        created_at: authData.user.created_at || new Date().toISOString(),
+        updated_at: profileData?.updated_at || authData.user.updated_at || new Date().toISOString(),
+        email_confirmed_at: authData.user.email_confirmed_at ?? null,
+        last_sign_in_at: authData.user.last_sign_in_at ?? null,
+        user_metadata: {
+          full_name: profileData?.full_name || authData.user.user_metadata.full_name || '',
+          avatar_url: profileData?.avatar_url || authData.user.user_metadata.avatar_url || '',
+        }
+      };
+
+      setProfile(userProfile);
+      setEditForm({
+        full_name: userProfile.user_metadata.full_name || '',
+        avatar_url: userProfile.user_metadata.avatar_url || ''
+      });
     } catch (error) {
       console.error('Error fetching profile:', error);
     } finally {
@@ -86,14 +91,14 @@ export default function ProfilePage() {
 
     try {
       setIsSaving(true);
-      const { error } = await supabase.auth.updateUser({
-        data: {
-          full_name: editForm.full_name,
-          avatar_url: editForm.avatar_url
-        }
+
+      const { updateProfile } = await import('@/app/actions/user-actions');
+      const { success, error } = await updateProfile(user.id, {
+        full_name: editForm.full_name,
+        avatar_url: editForm.avatar_url
       });
 
-      if (error) {
+      if (!success) {
         console.error('Error updating profile:', error);
         return;
       }

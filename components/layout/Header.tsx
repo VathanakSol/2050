@@ -84,6 +84,11 @@ const navIcons = {
         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
         </svg>
+    ),
+    Community: (
+        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+        </svg>
     )
 };
 
@@ -128,6 +133,7 @@ export function Header() {
         { name: 'Tools', href: '#', isDropdown: true, dropdownType: 'tools' },
         { name: 'AI Chat', href: '/chat' },
         { name: 'Upload', href: '/upload' },
+        { name: 'Community', href: '/community' },
         { name: 'Blog', href: '/blog' },
         { name: 'About', href: '/about' },
     ];
@@ -215,7 +221,7 @@ export function Header() {
                             Developer
                         </h1>
                         <span className="px-2 py-0.5 text-[10px] font-black bg-accent-yellow text-[#10162F] transform -rotate-6 border border-white shadow-[2px_2px_0px_0px_#FFFFFF]">
-                            v2.2
+                            v2.3
                         </span>
                     </div>
                 </div>

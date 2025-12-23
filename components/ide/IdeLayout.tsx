@@ -23,7 +23,9 @@ import {
     Columns,
     Rows,
     Maximize2,
-    Minimize2
+    Minimize2,
+    AlertTriangle,
+    X
 } from 'lucide-react';
 import { codeTemplates, CodeTemplate } from './templates';
 
@@ -62,6 +64,8 @@ export const IdeLayout = () => {
     const [showLoadDialog, setShowLoadDialog] = useState(false);
     const [showSettings, setShowSettings] = useState(false);
     const [showLibraries, setShowLibraries] = useState(false);
+    const [showUnsavedWarning, setShowUnsavedWarning] = useState(false);
+    const [pendingNavigation, setPendingNavigation] = useState<(() => void) | null>(null);
 
     const [projectName, setProjectName] = useState('');
     const [savedProjects, setSavedProjects] = useState<string[]>([]);
@@ -84,6 +88,7 @@ export const IdeLayout = () => {
 
     useEffect(() => {
         setMounted(true);
+         
         loadSavedProjectsList();
 
         // Load last project if exists
@@ -100,6 +105,7 @@ export const IdeLayout = () => {
         if (!isAutoRun) return;
 
         const timer = setTimeout(() => {
+             
             setLogs([]);
             setRunId(prev => prev + 1);
             setDebouncedHtml(htmlCode);
@@ -129,6 +135,7 @@ export const IdeLayout = () => {
             // Ctrl/Cmd + Enter to run
             if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
                 e.preventDefault();
+                 
                 handleManualRun();
             }
             // Ctrl/Cmd + S to save
@@ -145,7 +152,46 @@ export const IdeLayout = () => {
 
         window.addEventListener('keydown', handleKeyboard);
         return () => window.removeEventListener('keydown', handleKeyboard);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+    // Warn user before leaving page to prevent data loss
+    useEffect(() => {
+        const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+            // Only show warning if there's unsaved code
+            if (htmlCode.trim() || cssCode.trim() || jsCode.trim()) {
+                e.preventDefault();
+                e.returnValue = 'You have unsaved changes in the playground. Are you sure you want to leave?';
+                return 'You have unsaved changes in the playground. Are you sure you want to leave?';
+            }
+        };
+
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+    }, [htmlCode, cssCode, jsCode]);
+
+    // Check for unsaved changes before navigation
+    const checkUnsavedChanges = (callback: () => void) => {
+        if (htmlCode.trim() || cssCode.trim() || jsCode.trim()) {
+            setPendingNavigation(() => callback);
+            setShowUnsavedWarning(true);
+        } else {
+            callback();
+        }
+    };
+
+    const handleConfirmNavigation = () => {
+        if (pendingNavigation) {
+            pendingNavigation();
+            setPendingNavigation(null);
+        }
+        setShowUnsavedWarning(false);
+    };
+
+    const handleCancelNavigation = () => {
+        setPendingNavigation(null);
+        setShowUnsavedWarning(false);
+    };
 
     const handleManualRun = () => {
         setLogs([]);
@@ -158,6 +204,7 @@ export const IdeLayout = () => {
     const [activeTab, setActiveTab] = useState<'html' | 'css' | 'javascript'>('html');
     const [logs, setLogs] = useState<LogEntry[]>([]);
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleConsoleLog = useCallback((type: 'log' | 'error' | 'warn', message: any[]) => {
         setLogs(prev => [...prev, {
             type,
@@ -196,10 +243,12 @@ export const IdeLayout = () => {
         const projectData = localStorage.getItem(`ide_project_${name}`);
         if (projectData) {
             const project = JSON.parse(projectData);
-            setHtmlCode(project.html || '');
-            setCssCode(project.css || '');
-            setJsCode(project.js || '');
-            setShowLoadDialog(false);
+            checkUnsavedChanges(() => {
+                setHtmlCode(project.html || '');
+                setCssCode(project.css || '');
+                setJsCode(project.js || '');
+                setShowLoadDialog(false);
+            });
         }
     };
 
@@ -209,18 +258,20 @@ export const IdeLayout = () => {
     };
 
     const loadTemplate = (template: CodeTemplate) => {
-        setHtmlCode(template.html);
-        setCssCode(template.css);
-        setJsCode(template.js);
-        setShowTemplates(false);
+        checkUnsavedChanges(() => {
+            setHtmlCode(template.html);
+            setCssCode(template.css);
+            setJsCode(template.js);
+            setShowTemplates(false);
+        });
     };
 
     const resetCode = () => {
-        if (confirm('Are you sure you want to clear all code?')) {
+        checkUnsavedChanges(() => {
             setHtmlCode('');
             setCssCode('');
             setJsCode('');
-        }
+        });
     };
 
     const downloadProject = () => {
@@ -642,9 +693,7 @@ ${jsCode}
                                 </div>
                             </div>
 
-                            <div className="pt-4 border-t dark:border-gray-800">
-                                <p className="text-sm text-gray-500 mb-2">More settings coming soon...</p>
-                            </div>
+                            
                         </div>
                     </div>
                 </div>
@@ -731,6 +780,56 @@ ${jsCode}
                     </div>
                 </div>
             )}
+            
+            {/* Unsaved Changes Warning Modal */}
+            {showUnsavedWarning && (
+                <div className="fixed inset-0 bg-black/70 backdrop-blur-xs flex items-center justify-center z-[250] p-4">
+                    <div className="bg-white dark:bg-[#1a1d23] rounded-xl p-6 max-w-md w-full shadow-xl border border-gray-100 dark:border-gray-800 transform animate-in zoom-in-95 duration-200">
+                        <div className="text-center mb-6">
+                            <div className="mx-auto w-12 h-12 bg-accent-yellow rounded-full flex items-center justify-center mb-3 shadow-md">
+                                <AlertTriangle size={20} className="text-white" />
+                            </div>
+                            <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
+                                Wait a minute!
+                            </h2>
+                            <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+                                You have unsaved changes. What would you like to do?
+                            </p>
+                        </div>
+
+                        <div className="space-y-2">
+                            {/* Primary Action - Save & Continue */}
+                            <button
+                                onClick={() => {
+                                    setShowSaveDialog(true);
+                                    setShowUnsavedWarning(false);
+                                }}
+                                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-accent-yellow hover:bg-yellow-500 text-white font-medium rounded-lg transition-all shadow-sm text-sm"
+                            >
+                                <Save size={16} />
+                                Save & Continue
+                            </button>
+                            {/* Secondary Actions */}
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={handleConfirmNavigation}
+                                    className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-red-500 hover:bg-red-600 text-white font-medium rounded-lg transition-all text-sm"
+                                >
+                                    <X size={14} />
+                                    Discard Changes
+                                </button>
+                                <button
+                                    onClick={handleCancelNavigation}
+                                    className="flex-1 px-3 py-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 font-medium rounded-lg transition-all border border-gray-300 dark:border-gray-600 text-sm"
+                                >
+                                    Cancel
+                                </button>
+                </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Toasts */}
             {toast && (
                 <div className={`fixed bottom-8 left-1/2 -translate-x-1/2 z-[200] px-6 py-3 rounded-xl shadow-2xl flex items-center gap-3 animate-in fade-in slide-in-from-bottom-4 duration-300 ${toast.type === 'error' ? 'bg-red-600' : 'bg-gray-900 dark:bg-accent-yellow'

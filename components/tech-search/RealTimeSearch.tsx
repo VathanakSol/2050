@@ -8,6 +8,7 @@ import { searchInRealTime } from '@/app/actions/db';
 import { getTechNews, NewsItem } from '@/app/actions/news';
 import { getFeatureFlag } from '@/lib/featureFlags';
 import { getAIAnswer } from '@/app/actions/ai-search';
+import { UserCount } from '@/components/UserCount';
 
 const AVAILABLE_MODELS = [
     { id: 'gemini-2.5-flash', name: '⚡Flash' },
@@ -107,9 +108,14 @@ export default function RealTimeSearch() {
                     <div className="flex-grow lg:w-2/3">
                         <div className="text-center mb-8">
                             {!query && (
-                                <h2 className="text-5xl sm:text-6xl font-black text-foreground mb-6 tracking-tight">
-                                    Find your <span className="text-accent-yellow">tech</span> stack.
-                                </h2>
+                                <>
+                                    <div className="mb-8 flex justify-center animate-fade-in">
+                                        <UserCount />
+                                    </div>
+                                    <h2 className="text-5xl sm:text-6xl font-black text-foreground mb-6 tracking-tight">
+                                        Find your <span className="text-accent-yellow">tech</span> stack.
+                                    </h2>
+                                </>
                             )}
                             <SearchBar value={query} onChange={setQuery} />
                         </div>

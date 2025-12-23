@@ -228,12 +228,16 @@ function UploadFeature() {
 
         await fetchImages();
 
+        // Reset form for new upload but keep modal open
         setTimeout(() => {
           setSelectedFile(null);
           setPreviewUrl("");
           setCustomFileName("");
           setNotification(null);
-          setShowUploadModal(false);
+          // Reset file input
+          if (fileInputRef.current) {
+            fileInputRef.current.value = "";
+          }
         }, 2000);
       } else {
         throw new Error(data.error || "Upload failed");
@@ -878,7 +882,7 @@ function UploadFeature() {
                           className="relative w-full h-auto max-h-[400px] object-contain rounded-xl shadow-2xl border-2 border-accent-mint/50"
                         />
                         <button
-                          type="button"
+                          type="button" 
                           onClick={(e) => {
                             e.stopPropagation();
                             handleReset();
@@ -947,8 +951,6 @@ function UploadFeature() {
                     </div>
                   )}
                 </div>
-
-
 
                 {/* Notification */}
                 {notification && (
